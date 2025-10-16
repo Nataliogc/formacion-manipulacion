@@ -107,15 +107,34 @@
   .advice{margin-top:12px; background:var(--chip); border:1px solid var(--line); border-radius:12px; padding:12px}
   .advice ul{margin:6px 0 0 18px}
   .advice li{margin:4px 0}
+
+  #diag{margin:6px 0 0; font-size:12px; opacity:.8}
 </style>
 </head>
 <body>
 <div class="wrap">
 <div class="card" id="screen-start">
 <h1>Cuestionario — Manipulación de Alimentos</h1>
-<p class="sub">Elige bloque. <span class="hint">1 = fácil · 2 = medio · 3 = difícil.</span></p><div class="brand-logos"><div class="logo-card"><img alt="Hotel Guadiana by Sercotel — Logo" src="img/guadiana-logo.jpg"/></div><div class="logo-card"><img alt="Cumbria Hotel y Centro de Empresas — Logo" src="img/cumbria-logo.jpg"/></div></div><div class="mission"><h3>¿Por qué realizamos este cuestionario en nuestros hoteles?</h3><p>Porque la seguridad alimentaria es esencial para nuestros huéspedes y para el equipo. Este ejercicio ayuda a reforzar conocimientos críticos y a unificar criterios de trabajo.</p><ul><li>Prevenir intoxicaciones y alergias alimentarias (control de alérgenos, anisakis, temperaturas).</li><li>Cumplir la normativa vigente y los estándares de calidad a los que aspiramos.</li><li>Mejorar la experiencia del cliente asegurando alimentos seguros en todo momento.</li><li>Reducir mermas y reprocesos mediante buenas prácticas (FIFO/FEFO, limpieza y desinfección).</li><li>Fortalecer la cultura de seguridad alimentaria en todos los turnos y departamentos.</li></ul></div><div class="start-form"><input id="player-name" placeholder="Tu nombre para el ranking (opcional)" type="text"/><button class="btn" id="btn-save-name" type="button">Guardar nombre</button></div><div class="start-actions"><button class="btn secondary" id="btn-view-lb" type="button">Ver ranking</button><button class="btn secondary" id="btn-clear-lb" type="button">Borrar mi puntuación</button></div>
+<p class="sub">Elige bloque. <span class="hint">1 = fácil · 2 = medio · 3 = difícil.</span></p><div class="small muted" id="diag">Cargando bloques…</div><div class="brand-logos"><div class="logo-card"><img alt="Hotel Guadiana by Sercotel — Logo" src="img/guadiana-logo.jpg"/></div><div class="logo-card"><img alt="Cumbria Hotel y Centro de Empresas — Logo" src="img/cumbria-logo.jpg"/></div></div><div class="mission"><h3>¿Por qué realizamos este cuestionario en nuestros hoteles?</h3><p>Porque la seguridad alimentaria es esencial para nuestros huéspedes y para el equipo. Este ejercicio ayuda a reforzar conocimientos críticos y a unificar criterios de trabajo.</p><ul><li>Prevenir intoxicaciones y alergias alimentarias (control de alérgenos, anisakis, temperaturas).</li><li>Cumplir la normativa vigente y los estándares de calidad a los que aspiramos.</li><li>Mejorar la experiencia del cliente asegurando alimentos seguros en todo momento.</li><li>Reducir mermas y reprocesos mediante buenas prácticas (FIFO/FEFO, limpieza y desinfección).</li><li>Fortalecer la cultura de seguridad alimentaria en todos los turnos y departamentos.</li></ul></div><div class="start-form"><input id="player-name" placeholder="Tu nombre para el ranking (opcional)" type="text"/><button class="btn" id="btn-save-name" type="button">Guardar nombre</button></div><div class="start-actions"><button class="btn secondary" id="btn-view-lb" type="button">Ver ranking</button><button class="btn secondary" id="btn-clear-lb" type="button">Borrar mi puntuación</button></div>
 <div class="block-picker" id="picker">
-<!-- Se generan por JS -->
+<button class="block" id="static-b1" type="button">
+<div class="tag">Bloque 1 · Fácil</div>
+<div class="lv">🟢 Nivel 1</div>
+<div class="desc">25 preguntas (cargadas)</div>
+<span class="go">Empezar<span aria-hidden="true">➜</span></span>
+</button>
+<button class="block" id="static-b2" type="button">
+<div class="tag">Bloque 2 · Medio</div>
+<div class="lv">🟡 Nivel 2</div>
+<div class="desc">25 preguntas (cargadas)</div>
+<span class="go">Empezar<span aria-hidden="true">➜</span></span>
+</button>
+<button class="block" id="static-b3" type="button">
+<div class="tag">Bloque 3 · Difícil</div>
+<div class="lv">🔴 Nivel 3</div>
+<div class="desc">25 preguntas (cargadas)</div>
+<span class="go">Empezar<span aria-hidden="true">➜</span></span>
+</button>
 </div>
 <p class="muted small">Recomendación: completar los 3 bloques. No se puede retroceder entre preguntas.</p>
 </div>
@@ -1408,6 +1427,62 @@ btnSaveRank?.addEventListener('click', async ()=>{
   }catch(e){
     console.warn("enqueue on error", e);
   }
+});
+
+
+// ========== INIT SEGURO + DIAGNOSTICO ==========
+(function(){
+  function updateDiag(msg){ var d=document.querySelector('#diag'); if(d) d.innerHTML=msg; }
+  function countQuestions(){
+    try{
+      if(!Array.isArray(blocks)) return 'blocks no definido';
+      const totals = blocks.map(b => (b.questions||[]).length);
+      return 'Bloques: ' + blocks.length + ' · Preguntas: ' + totals.join(' / ');
+    }catch(e){ return 'Error leyendo blocks: '+e; }
+  }
+  function boot(){
+    try{
+      if(typeof renderPicker==='function') renderPicker();
+      const picker=document.querySelector('#picker');
+      const msg = countQuestions();
+      if(!picker || !picker.children.length){
+        updateDiag('⚠️ No se han pintado las tarjetas de bloques. ' + msg + '. Prueba Ctrl+F5.');
+      }else{
+        updateDiag('✅ Listo. ' + msg);
+      }
+    }catch(e){
+      console.error(e);
+      updateDiag('⚠️ Error de inicio: '+e);
+    }
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+  // Reintento por si el navegador demora scripts
+  setTimeout(boot, 300);
+  setTimeout(boot, 1000);
+})();
+
+
+// Conectar botones pre-renderizados (modo failsafe)
+(function(){
+  function wire(){
+    var b1=document.getElementById('static-b1');
+    var b2=document.getElementById('static-b2');
+    var b3=document.getElementById('static-b3');
+    if(b1&&typeof startBlock==='function'){ b1.onclick=function(){ startBlock(0); }; }
+    if(b2&&typeof startBlock==='function'){ b2.onclick=function(){ startBlock(1); }; }
+    if(b3&&typeof startBlock==='function'){ b3.onclick=function(){ startBlock(2); }; }
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', wire); } else { wire(); }
+})();
+
+// Mostrar errores JS en pantalla
+window.addEventListener('error', function(e){
+  var d=document.getElementById('diag');
+  if(d){ d.innerHTML = '⚠️ Error JS: ' + (e.message || e.error); }
 });
 </script>
 </body>
