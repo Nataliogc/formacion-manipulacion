@@ -1,1489 +1,410 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Cuestionario Manipulación de Alimentos – 3 Bloques (25 c/u)</title>
-<meta content="light dark" name="color-scheme"/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cuestionario — Manipulación de Alimentos</title>
 <style>
   :root{
-    --bg:#0b1220; --card:#121a2b; --ink:#e6ecff; --muted:#9fb0d0; --brand:#6ee7b7;
-    --accent:#60a5fa; --ok:#34d399; --bad:#f87171; --warn:#fbbf24; --line:#1f2a44;
-    --chip:#19243a; --choice:#162238; --choice-h:#1c2b47; --explain:#0f1a2e;
-    --btn:#1f2a44; --btn-h:#233152; --shadow: 0 12px 30px rgba(0,0,0,.35);
-  }
-  @media (prefers-color-scheme: light){
-    :root{
-      --bg:#f6f7fb; --card:#ffffff; --ink:#0b1220; --muted:#55627a; --brand:#0ea5e9;
-      --accent:#2563eb; --ok:#059669; --bad:#dc2626; --warn:#b45309; --line:#e6ebf2;
-      --chip:#eef2ff; --choice:#f8fafc; --choice-h:#eef2f9; --explain:#f3f6ff;
-      --btn:#0f172a; --btn-h:#111827; --shadow: 0 12px 30px rgba(2,6,23,.08);
-    }
+    --ink:#0b1220; --muted:#475569; --bg:#eef2f8; --card:#ffffff; --line:#e5e7eb;
+    --ok:#10b981; --bad:#ef4444; --brand:#111827; --accent:#0ea5e9;
+    --grad1:#2a3147; --grad2:#1e2436;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(120deg,var(--bg),#0d1629 35%,var(--bg));color:var(--ink)}
-  .wrap{max-width:980px;margin:auto;padding:clamp(16px,3vw,28px)}
-  .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:clamp(16px,2.5vw,28px); box-shadow:var(--shadow)}
-  h1{margin:0 0 6px;font-weight:800;letter-spacing:.2px}
-  .sub{color:var(--muted); margin:0 0 18px}
-  .row{display:flex; gap:14px; flex-wrap:wrap}
-  .chip{background:var(--chip); color:var(--accent); border:1px solid var(--line); padding:8px 12px; border-radius:999px; font-weight:700}
-  .muted{color:var(--muted)}
-  .block-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin:18px 0 6px}
-  .block{border:1px solid var(--line); background:var(--choice); border-radius:16px; padding:18px; cursor:pointer; transition:transform .12s ease, background .12s; position:relative}
-  .block:hover{transform:translateY(-2px); background:var(--choice-h)}
-  .tag{font-size:12px; letter-spacing:.4px; text-transform:uppercase; color:var(--muted)}
-  .lv{font-weight:800; font-size:20px; margin:6px 0 2px}
-  .desc{color:var(--muted); font-size:14px}
-  .go{display:inline-flex; align-items:center; gap:8px; margin-top:12px; padding:10px 14px; border-radius:12px; background:var(--btn); color:#fff; text-decoration:none; border:1px solid var(--line)}
-  .go:hover{background:var(--btn-h)}
-  .progress{height:8px; background:var(--chip); border:1px solid var(--line); border-radius:999px; overflow:hidden}
-  .bar{height:100%; width:0%; background:linear-gradient(90deg,var(--brand),var(--accent))}
-  .qhead{display:flex; justify-content:space-between; align-items:center; gap:16px}
-  .qtitle{font-weight:800; font-size:18px; line-height:1.4}
-  .idx{font-variant-numeric:tabular-nums; color:var(--muted); font-weight:700}
-  .choices{display:grid; gap:10px; margin-top:14px}
-  .choice{border:1px solid var(--line); background:var(--choice); border-radius:12px; padding:14px; cursor:pointer; display:flex; gap:10px; align-items:flex-start; transition:background .12s}
-  .choice:hover{background:var(--choice-h)}
-  .bullet{width:22px; height:22px; border:2px solid var(--muted); border-radius:999px; flex:0 0 22px; transform:translateY(2px)}
-  .choice.selected .bullet{border-color:var(--accent); box-shadow:0 0 0 4px color-mix(in oklab,var(--accent) 25%, transparent)}
-  .choice.correct{border-color:color-mix(in oklab,var(--ok) 60%, var(--line)); box-shadow:0 0 0 2px color-mix(in oklab,var(--ok) 18%, transparent)}
-  .choice.incorrect{border-color:color-mix(in oklab,var(--bad) 60%, var(--line)); box-shadow:0 0 0 2px color-mix(in oklab,var(--bad) 18%, transparent)}
-  .explain{margin-top:14px; background:var(--explain); border:1px solid var(--line); border-radius:12px; padding:14px}
-  .explain b{color:var(--brand)}
-  .footer{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:18px}
-  .btn{background:var(--btn); color:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 16px; cursor:pointer; font-weight:700}
-  .btn[disabled]{opacity:.5; cursor:not-allowed}
-  .score{font-weight:800}
-  .summary{display:grid; gap:10px; margin-top:10px}
-  .pill{display:inline-flex; gap:8px; align-items:center; padding:10px 12px; border-radius:999px; border:1px solid var(--line); background:var(--chip)}
-  .ok{color:var(--ok)} .bad{color:var(--bad)} .warn{color:var(--warn)}
-  .hint{font-size:13px; color:var(--muted)}
-  .small{font-size:14px}
-  .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
-  .hidden{display:none!important}
+  body{
+    margin:0; color:var(--ink); font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+    background:
+      radial-gradient(1200px 600px at -10% -10%, #cdd7f1 0, rgba(255,255,255,0) 60%),
+      radial-gradient(1000px 600px at 110% -10%, #cfe7ff 0, rgba(255,255,255,0) 55%),
+      linear-gradient(180deg, var(--grad1) 0, var(--grad2) 160px, #f4f6fb 160px);
+  }
+  .wrap{max-width:1024px;margin:0 auto;padding:26px; padding-top:32px;}
 
-  .brand-logos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:center;margin:6px 0 12px}
-  .brand-logos .logo-card{background:var(--choice);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;justify-content:center;align-items:center}
-  .brand-logos img{max-width:100%;height:auto;object-fit:contain}
-  @media (max-width:720px){.brand-logos{grid-template-columns:1fr}}
-  .mission{margin:10px 0 0;background:var(--chip);border:1px solid var(--line);border-radius:14px;padding:14px}
-  .mission h3{margin:0 0 6px;font-size:16px}
-  .mission p{margin:6px 0;color:var(--muted)}
-  .mission ul{margin:8px 0 0 18px}
-  .mission li{margin:4px 0}
+  /* Topbar fija (sólida y legible) */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    background:#ffffff;
+    color:#0b1220;
+    padding:12px 18px;
+    border-bottom:1px solid #e5e7eb;
+    box-shadow:0 6px 16px rgba(15,23,42,.08);
+  }
+  .topbar .title{font-weight:900; font-size:clamp(22px,3vw,34px); letter-spacing:.2px}
+  .topbar .sub{color:#64748b}
+  .topbar .row{display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+  .pill{
+    display:inline-flex; align-items:center; gap:8px;
+    background:#f8fafc; border:1px solid #e5e7eb;
+    padding:8px 12px; border-radius:999px; color:#0f172a; font-weight:700
+  }
+  .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
+  .dot.g{background:#22c55e}.dot.y{background:#f59e0b}.dot.r{background:#ef4444}
 
-  .start-form{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin:10px 0 6px}
-  .start-form input[type="text"]{border:1px solid var(--line);background:var(--choice);color:var(--ink);
-    border-radius:10px;padding:10px 12px;outline:none}
-  .start-actions{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}
-  .btn.secondary{background:transparent;color:var(--ink)}
-  .btn.secondary{border:1px solid var(--line)}
-  .leaderboard{margin-top:10px}
-  .table{width:100%;border-collapse:separate;border-spacing:0;margin-top:10px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
-  .table th,.table td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}
-  .table th{background:var(--chip);color:var(--muted);font-weight:700}
-  .table tr:last-child td{border-bottom:none}
-  .rank1{font-weight:800}
-  .rank2{font-weight:700}
-  .rank3{font-weight:700}
-  .save-rank{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
-  .save-rank input[type="text"]{border:1px solid var(--line);background:var(--choice);color:var(--ink);
-    border-radius:10px;padding:10px 12px;outline:none}
-  .notice{font-size:12px;color:var(--muted)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 28px rgba(15,23,42,.08)}
+  .shell{padding:18px}
 
-  .banner{margin-top:12px; padding:10px 12px; border-radius:12px; border:1px solid var(--line); display:flex; gap:10px; align-items:flex-start}
-  .banner.ok{background:color-mix(in oklab, var(--ok) 12%, transparent); border-color:color-mix(in oklab,var(--ok) 40%, var(--line)); color:var(--ink)}
-  .banner.bad{background:color-mix(in oklab, var(--bad) 12%, transparent); border-color:color-mix(in oklab,var(--bad) 40%, var(--line)); color:var(--ink)}
-  .choice.correct::after{content:" ✅"; font-weight:700; margin-left:auto}
-  .choice.incorrect::after{content:" ❌"; font-weight:700; margin-left:auto}
-  .review{margin-top:14px}
-  .review h3{margin:0 0 8px}
-  .review-item{border:1px solid var(--line); border-radius:12px; padding:12px; background:var(--choice); margin-bottom:10px}
-  .review-item .q{font-weight:700; margin-bottom:6px}
-  .review-item .u{margin:2px 0; color:var(--bad)}
-  .review-item .c{margin:2px 0; color:var(--ok)}
-  .advice{margin-top:12px; background:var(--chip); border:1px solid var(--line); border-radius:12px; padding:12px}
-  .advice ul{margin:6px 0 0 18px}
-  .advice li{margin:4px 0}
+  /* Portada */
+  .logos{display:flex;gap:18px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+  .logo{background:#f6f8fc;border:1px solid var(--line);border-radius:14px;padding:12px 16px;flex:1;display:flex;justify-content:center}
+  .logo img{height:140px;max-width:100%;object-fit:contain}
+  .info{background:#f3f6ff;border:1px solid #d7e4ff;border-radius:14px;padding:14px 16px;margin-top:14px}
+  .levels{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+  .lvl{background:#f9fbff;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
+  .lvl .meta{color:var(--muted);font-size:14px}
+  .btn{background:var(--brand);color:#fff;border:0;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
+  .ghost{background:#0a66cc}
 
-  #diag{margin:6px 0 0; font-size:12px; opacity:.8}
+  /* Quiz */
+  .quiz-head{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+  .stat{display:inline-flex; align-items:center; gap:6px; padding:8px 10px; border-radius:999px; background:#f3f4f6; border:1px solid var(--line); font-weight:700}
+  .stat.ok{background:#ecfdf5; border-color:#bbf7d0; color:#065f46}
+  .stat.bad{background:#fef2f2; border-color:#fecaca; color:#7f1d1d}
+  .qtitle{font-weight:800;margin:10px 0 6px}
+  .choices{display:grid;gap:10px;margin-top:8px}
+  .choice{background:#ffffff;border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer}
+  .choice:hover{box-shadow:0 10px 20px rgba(15,23,42,.05)}
+  .choice.correct{border-color:var(--ok);background:#ecfdf5}
+  .choice.incorrect{border-color:var(--bad);background:#fef2f2}
+  .explain{margin-top:10px;background:#f7fafc;border:1px solid var(--line);border-radius:12px;padding:10px}
+  .footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* Barra de progreso */
+  .progress{height:12px;background:#eef2f7;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+  .bar{height:100%;width:0;background:linear-gradient(90deg,#22c55e,#0ea5e9);transition:width .25s ease}
+
+  /* Ranking modal (sin borrar) */
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.25)}
+  .modal.show{display:flex}
+  .panel{max-width:620px;width:100%;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 40px rgba(15,23,42,.18)}
+  .panel .shell{padding:16px}
+  .rank{font-size:15px;line-height:1.55}
+
+  @media (max-width:900px){.levels{grid-template-columns:1fr}.logo img{height:120px}}
 </style>
 </head>
 <body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="row">
+    <div>
+      <div class="title">Cuestionario — Manipulación de Alimentos</div>
+      <div class="sub">Elige bloque: 1 = fácil · 2 = medio · 3 = difícil.</div>
+    </div>
+    <div class="pill" id="topStatus" aria-live="polite">En portada</div>
+  </div>
+</div>
+
 <div class="wrap">
-<div class="card" id="screen-start">
-<h1>Cuestionario — Manipulación de Alimentos</h1>
-<p class="sub">Elige bloque. <span class="hint">1 = fácil · 2 = medio · 3 = difícil.</span></p><div class="small muted" id="diag">Cargando bloques…</div><div class="brand-logos"><div class="logo-card"><img alt="Hotel Guadiana by Sercotel — Logo" src="img/guadiana-logo.jpg"/></div><div class="logo-card"><img alt="Cumbria Hotel y Centro de Empresas — Logo" src="img/cumbria-logo.jpg"/></div></div><div class="mission"><h3>¿Por qué realizamos este cuestionario en nuestros hoteles?</h3><p>Porque la seguridad alimentaria es esencial para nuestros huéspedes y para el equipo. Este ejercicio ayuda a reforzar conocimientos críticos y a unificar criterios de trabajo.</p><ul><li>Prevenir intoxicaciones y alergias alimentarias (control de alérgenos, anisakis, temperaturas).</li><li>Cumplir la normativa vigente y los estándares de calidad a los que aspiramos.</li><li>Mejorar la experiencia del cliente asegurando alimentos seguros en todo momento.</li><li>Reducir mermas y reprocesos mediante buenas prácticas (FIFO/FEFO, limpieza y desinfección).</li><li>Fortalecer la cultura de seguridad alimentaria en todos los turnos y departamentos.</li></ul></div><div class="start-form"><input id="player-name" placeholder="Tu nombre para el ranking (opcional)" type="text"/><button class="btn" id="btn-save-name" type="button">Guardar nombre</button></div><div class="start-actions"><button class="btn secondary" id="btn-view-lb" type="button">Ver ranking</button><button class="btn secondary" id="btn-clear-lb" type="button">Borrar mi puntuación</button></div>
-<div class="block-picker" id="picker">
-<button class="block" id="static-b1" type="button">
-<div class="tag">Bloque 1 · Fácil</div>
-<div class="lv">🟢 Nivel 1</div>
-<div class="desc">25 preguntas (cargadas)</div>
-<span class="go">Empezar<span aria-hidden="true">➜</span></span>
-</button>
-<button class="block" id="static-b2" type="button">
-<div class="tag">Bloque 2 · Medio</div>
-<div class="lv">🟡 Nivel 2</div>
-<div class="desc">25 preguntas (cargadas)</div>
-<span class="go">Empezar<span aria-hidden="true">➜</span></span>
-</button>
-<button class="block" id="static-b3" type="button">
-<div class="tag">Bloque 3 · Difícil</div>
-<div class="lv">🔴 Nivel 3</div>
-<div class="desc">25 preguntas (cargadas)</div>
-<span class="go">Empezar<span aria-hidden="true">➜</span></span>
-</button>
+
+  <!-- PORTADA -->
+  <div id="home" class="card">
+    <div class="shell">
+      <div class="logos">
+        <div class="logo"><img src="img/guadiana-logo.jpg" alt="Hotel Guadiana"></div>
+        <div class="logo"><img src="img/cumbria-logo.jpg" alt="Hotel Cumbria"></div>
+      </div>
+
+      <div class="info">
+        <b>¿Por qué realizamos este cuestionario en nuestros hoteles?</b>
+        <ul>
+          <li>Prevenir intoxicaciones y alergias alimentarias (alérgenos, anisakis, temperaturas).</li>
+          <li>Cumplir la normativa vigente y los estándares de calidad a los que aspiramos.</li>
+          <li>Mejorar la experiencia del cliente asegurando alimentos seguros en todo momento.</li>
+          <li>Reducir mermas y reprocesos mediante buenas prácticas (FIFO/FEFO, limpieza y desinfección).</li>
+          <li>Fortalecer la cultura de seguridad alimentaria en todos los turnos y departamentos.</li>
+        </ul>
+      </div>
+
+      <div class="levels">
+        <div class="lvl">
+          <div class="meta">BLOQUE 1 · FÁCIL</div>
+          <h3><span class="dot g"></span> Nivel 1</h3>
+          <div class="meta">25 preguntas cargadas · objetivo 25</div>
+          <div style="margin-top:10px"><button class="btn" onclick="startBlock('1')">Empezar →</button></div>
+        </div>
+        <div class="lvl">
+          <div class="meta">BLOQUE 2 · MEDIO</div>
+          <h3><span class="dot y"></span> Nivel 2</h3>
+          <div class="meta">25 preguntas cargadas · objetivo 25</div>
+          <div style="margin-top:10px"><button class="btn" onclick="startBlock('2')">Empezar →</button></div>
+        </div>
+        <div class="lvl">
+          <div class="meta">BLOQUE 3 · DIFÍCIL</div>
+          <h3><span class="dot r"></span> Nivel 3</h3>
+          <div class="meta">25 preguntas cargadas · objetivo 25</div>
+          <div style="margin-top:10px"><button class="btn" onclick="startBlock('3')">Empezar →</button></div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;display:flex;gap:10px">
+        <button class="btn ghost" onclick="openRanking()">Ver ranking</button>
+      </div>
+
+      <p class="meta" style="margin-top:10px">Recomendación: completar los 3 bloques. No se puede retroceder entre preguntas.</p>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz" class="card" style="display:none;margin-top:16px">
+    <div class="shell">
+      <div class="quiz-head">
+        <div id="head" class="pill" style="background:#eef2ff;border:1px solid #dbe4ff;color:#1e293b">Bloque</div>
+        <div class="stat ok">✅ Aciertos: <span id="statOk">0</span></div>
+        <div class="stat bad">❌ Fallos: <span id="statBad">0</span></div>
+        <div class="stat">📄 Pregunta: <span id="statQ">0</span>/<span id="statTotal">0</span></div>
+      </div>
+
+      <div style="margin:10px 0">
+        <div class="progress" aria-label="Progreso del cuestionario">
+          <div id="bar" class="bar"></div>
+        </div>
+      </div>
+
+      <div id="qtitle" class="qtitle"></div>
+      <div id="choices" class="choices"></div>
+      <div id="explain" class="explain" style="display:none"></div>
+      <div class="footer">
+        <div class="meta" id="progressText"></div>
+        <button id="next" class="btn" disabled>Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="end" class="card" style="display:none;margin-top:16px">
+    <div class="shell">
+      <h2>Bloque completado</h2>
+      <p id="score"></p>
+      <div id="review"></div>
+      <p id="recommendation" class="meta"></p>
+      <div style="margin-top:10px">
+        <button class="btn ghost" onclick="openRanking()">Ver ranking</button>
+        <button class="btn" style="background:#334155" onclick="showStart()">Volver al inicio</button>
+      </div>
+    </div>
+  </div>
 </div>
-<p class="muted small">Recomendación: completar los 3 bloques. No se puede retroceder entre preguntas.</p>
+
+<!-- MODAL RANKING (sin borrar) -->
+<div id="rankModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="rankTitle">
+  <div class="panel">
+    <div class="shell">
+      <h3 id="rankTitle">Ranking</h3>
+      <div class="rank" id="rankList">Aún no hay puntuaciones.</div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button class="btn ghost" onclick="closeRanking()">Cerrar</button>
+      </div>
+    </div>
+  </div>
 </div>
-<div class="card hidden" id="screen-quiz">
-<div class="row" style="justify-content:space-between; align-items:center; margin-bottom:10px">
-<div class="chip" id="chip-level">Bloque 1 · Fácil</div>
-<div class="pill"><span class="score" id="score-mini">0</span>/<span id="total-mini">0</span> correctas</div>
-</div>
-<div aria-label="Progreso" class="progress"><div class="bar" id="bar"></div></div>
-<div style="margin-top:16px">
-<div class="qhead">
-<div class="idx" id="q-idx">Pregunta 1</div>
-<div class="idx" id="q-count">/ 25</div>
-</div>
-<div class="qtitle" id="q-title">...</div>
-<div class="choices" id="choices"></div>
-<div class="explain hidden" id="explain"></div>
-<div class="footer">
-<div class="muted hint">Tras responder, verás la explicación de la correcta.</div>
-<button class="btn" disabled="" id="btn-next">Siguiente</button>
-</div>
-</div>
-</div>
-<div class="card hidden" id="screen-end">
-<h2 style="margin:0 0 6px">¡Bloque completado!</h2>
-<p class="sub" id="end-sub">Resultados del bloque…</p>
-<div class="summary" id="end-summary"></div>
-<div class="row" style="margin-top:12px">
-<button class="btn" id="btn-next-block">Siguiente bloque</button>
-<button class="btn" id="btn-restart">Volver a empezar</button>
-</div>
-<p class="hint" style="margin-top:10px">Puedes añadir/editar preguntas en el array <b>blocks</b> dentro del código. Soporta 25+ por bloque.</p>
-<div class="save-rank"><span>Guardar en ranking:</span><input id="rank-name" placeholder="Tu nombre" type="text"/><button class="btn" id="btn-save-rank" type="button">Guardar puntuación</button><div class="notice">Se guardan: nombre, bloque, puntuación y fecha. Local en tu navegador.</div></div><div class="review" id="end-review"><h3>Preguntas a revisar</h3><div id="review-list"></div></div><div class="advice" id="end-advice"><h3>Recomendación personalizada</h3><div id="advice-body"></div></div></div>
-<div class="card hidden" id="screen-lb"><h2>Ranking de participantes</h2><p class="sub">Top 20 por porcentaje, mostrando último intento por persona.</p><div class="leaderboard" id="leaderboard"></div><button class="btn" id="btn-back-start" type="button">Volver</button></div></div>
+
 <script>
-const blocks = [
-  {
-    "id": 1,
-    "level": "Fácil",
-    "color": "🟢",
-    "questions": [
-      {
-        "q": "¿Qué es la contaminación cruzada?",
-        "options": [
-          "Cuando un alimento pierde sabor por el frío.",
-          "La transferencia de microorganismos o alérgenos entre alimentos por contacto directo o indirecto.",
-          "La mezcla voluntaria de dos alimentos compatibles."
-        ],
-        "correctIndex": 1,
-        "rationale": "Puede producirse por manos, utensilios, paños o superficies; separa crudos de listos para consumo."
-      },
-      {
-        "q": "Temperatura correcta de refrigeración para alimentos frescos en general:",
-        "options": [
-          "0–4 °C",
-          "10–14 °C",
-          "–5–0 °C"
-        ],
-        "correctIndex": 0,
-        "rationale": "La proliferación microbiana se ralentiza a 0–4 °C; vigila con termómetro."
-      },
-      {
-        "q": "¿Se pueden descongelar alimentos a temperatura ambiente?",
-        "options": [
-          "Sí, si se cocinan luego.",
-          "No, deben descongelarse en nevera o microondas.",
-          "Sí, si se cubren con film."
-        ],
-        "correctIndex": 1,
-        "rationale": "La descongelación a temperatura ambiente favorece el crecimiento microbiano superficial."
-      },
-      {
-        "q": "Temperatura mínima en el centro del producto para una cocción segura general:",
-        "options": [
-          "55 °C",
-          "70 °C",
-          "90 °C"
-        ],
-        "correctIndex": 1,
-        "rationale": "70 °C en el centro es referencia de seguridad; huevo fresco en tortilla requiere 75 °C."
-      },
-      {
-        "q": "Uso de guantes:",
-        "options": [
-          "Sustituyen el lavado de manos.",
-          "No eximen del lavado y deben cambiarse con frecuencia.",
-          "Pueden usarse todo el día."
-        ],
-        "correctIndex": 1,
-        "rationale": "Los guantes no sustituyen la higiene de manos; cámbialos al cambiar de tarea."
-      },
-      {
-        "q": "Orden en frigorífico único para evitar contaminación cruzada:",
-        "options": [
-          "Crudos arriba y cocinados abajo.",
-          "Cocinados arriba y crudos abajo.",
-          "Todo mezclado si está tapado."
-        ],
-        "correctIndex": 1,
-        "rationale": "Coloca cocinados arriba para evitar goteos de crudos sobre alimentos listos para consumo."
-      },
-      {
-        "q": "Mantenimiento en caliente antes del servicio (mínimo en el centro del alimento):",
-        "options": [
-          "45 °C",
-          "65 °C",
-          "80 °C"
-        ],
-        "correctIndex": 1,
-        "rationale": "Mantener a ≥65 °C reduce el riesgo de crecimiento microbiano."
-      },
-      {
-        "q": "¿Cuándo debes lavarte las manos?",
-        "options": [
-          "Solo al empezar el turno.",
-          "Antes de manipular alimentos y tras tocar crudos, basura, móvil, toser, ir al baño, etc.",
-          "Cada hora."
-        ],
-        "correctIndex": 1,
-        "rationale": "Siempre que se cambie de tarea o haya posibilidad de contaminación."
-      },
-      {
-        "q": "¿Se pueden volver a congelar alimentos ya descongelados?",
-        "options": [
-          "Sí, siempre.",
-          "No, nunca.",
-          "Solo si no han perdido el vacío."
-        ],
-        "correctIndex": 1,
-        "rationale": "No recongelar: aumenta el riesgo de proliferación y deterioro."
-      },
-      {
-        "q": "¿Qué no debes hacer al manipular alimentos?",
-        "options": [
-          "Usar paños de cocina para múltiples tareas.",
-          "Probar con cuchara limpia y lavarla después.",
-          "Usar utensilios para tocar alimentos listos."
-        ],
-        "correctIndex": 0,
-        "rationale": "Evita paños reutilizados; mejor papel desechable y paños diferenciados."
-      },
-      {
-        "q": "Lavado de frutas/verduras crudas:",
-        "options": [
-          "No es necesario si se ven limpias.",
-          "Lavar enteras bajo el grifo y desinfectar según protocolo.",
-          "Cortar primero y luego lavar."
-        ],
-        "correctIndex": 1,
-        "rationale": "Lavar la pieza entera primero evita que la suciedad entre en el interior."
-      },
-      {
-        "q": "Para reducir anisakis en pescado crudo/marinado:",
-        "options": [
-          "Solo lavarlo con agua fría.",
-          "Congelar a –20 °C ≥24 h antes del servicio.",
-          "Cocinarlos a 50 °C."
-        ],
-        "correctIndex": 1,
-        "rationale": "La congelación a –20 °C durante al menos 24 h inactiva anisakis."
-      },
-      {
-        "q": "Conservación de platos elaborados para >24 h:",
-        "options": [
-          "0–4 °C",
-          "0–8 °C",
-          "5–8 °C"
-        ],
-        "correctIndex": 0,
-        "rationale": "Para duraciones largas, 0–4 °C; si <24 h, hasta 8 °C."
-      },
-      {
-        "q": "Gestión de residuos:",
-        "options": [
-          "Abrir contenedores con pedal y limpiarlos a diario.",
-          "Vaciar solo al 100% y abrir con la mano.",
-          "Verter aceite usado por el fregadero."
-        ],
-        "correctIndex": 0,
-        "rationale": "Evita contacto manual y vierte aceites en gestores autorizados."
-      },
-      {
-        "q": "Higiene personal correcta:",
-        "options": [
-          "Usar joyas si están limpias.",
-          "Uñas cortas, sin esmalte; cabello recogido y cubierto.",
-          "Perfume intenso para tapar olores."
-        ],
-        "correctIndex": 1,
-        "rationale": "Las joyas y esmaltes pueden desprenderse/contaminar; el cabello debe estar controlado."
-      },
-      {
-        "q": "Equipamiento de corte (tablas y cuchillos):",
-        "options": [
-          "Usar la misma tabla para todo.",
-          "Diferenciar por código de color o uso.",
-          "Solo importa que estén afilados."
-        ],
-        "correctIndex": 1,
-        "rationale": "Separar tablas por uso reduce contaminación cruzada."
-      },
-      {
-        "q": "Limpieza de superficies:",
-        "options": [
-          "Primero desinfectar y luego limpiar.",
-          "Primero limpiar con detergente, después desinfectar.",
-          "Solo agua caliente."
-        ],
-        "correctIndex": 1,
-        "rationale": "La materia orgánica inactiva desinfectantes; limpia antes de desinfectar."
-      },
-      {
-        "q": "Cadena de frío en recepción:",
-        "options": [
-          "No es importante si el transporte fue corto.",
-          "Registrar temperaturas y almacenar de inmediato.",
-          "Esperar a terminar otras tareas."
-        ],
-        "correctIndex": 1,
-        "rationale": "Las temperaturas deben verificarse y los productos entrar a cámara sin demora."
-      },
-      {
-        "q": "Fecha de caducidad vs. consumo preferente:",
-        "options": [
-          "Son lo mismo.",
-          "Caducidad: seguridad; Preferente: calidad.",
-          "Preferente es más estricta que caducidad."
-        ],
-        "correctIndex": 1,
-        "rationale": "La caducidad implica riesgo sanitario tras la fecha; consumo preferente afecta cualidades organolépticas."
-      },
-      {
-        "q": "Descongelación segura de grandes piezas:",
-        "options": [
-          "En nevera, sobre rejilla, recipientes que recojan goteos.",
-          "A temperatura ambiente sobre la mesa.",
-          "Bajo agua caliente."
-        ],
-        "correctIndex": 0,
-        "rationale": "Evita goteos y superficies a temperatura de peligro."
-      },
-      {
-        "q": "Toma de temperatura del alimento:",
-        "options": [
-          "Cualquier zona sirve.",
-          "En el centro del producto y zonas más gruesas.",
-          "En la superficie."
-        ],
-        "correctIndex": 1,
-        "rationale": "El punto más frío suele ser el centro; verifica allí."
-      },
-      {
-        "q": "Uso del móvil en cocina:",
-        "options": [
-          "Permitido si es rápido.",
-          "Evitarlo; si se usa, lavar manos después.",
-          "No influye."
-        ],
-        "correctIndex": 1,
-        "rationale": "El móvil es un vector de contaminación; higiene posterior obligatoria."
-      },
-      {
-        "q": "Desinfección de hojas verde-lamela:",
-        "options": [
-          "Jabón suave.",
-          "Agua con desinfectante alimentario según etiqueta.",
-          "Vinagre casero siempre."
-        ],
-        "correctIndex": 1,
-        "rationale": "Usa productos autorizados y respeta tiempos/concentraciones."
-      },
-      {
-        "q": "Manipulación de hielo para bebidas:",
-        "options": [
-          "Con las manos limpias.",
-          "Con pinzas o cubitera y utensilios limpios.",
-          "Cualquier método sirve."
-        ],
-        "correctIndex": 1,
-        "rationale": "El hielo es alimento; manipúlalo con utensilios limpios para evitar contaminación."
-      },
-      {
-        "q": "Alérgenos:",
-        "options": [
-          "Basta con avisar verbalmente.",
-          "Debes conocer y poder informar por escrito de los alérgenos presentes.",
-          "No es obligatorio informar."
-        ],
-        "correctIndex": 1,
-        "rationale": "La información de alérgenos debe ser clara, accesible y fiable para el cliente."
-      }
-    ]
-  },
-  {
-    "id": 2,
-    "level": "Medio",
-    "color": "🟡",
-    "questions": [
-      {
-        "q": "Zona de peligro de temperaturas para crecimiento microbiano (aprox.):",
-        "options": [
-          "10–64 °C",
-          "–18–0 °C",
-          "65–90 °C"
-        ],
-        "correctIndex": 0,
-        "rationale": "Evita mantener alimentos en ese rango durante tiempos prolongados."
-      },
-      {
-        "q": "Huevos en elaboraciones (p. ej., tortillas): temperatura de seguridad en el centro:",
-        "options": [
-          "60 °C",
-          "70 °C",
-          "75 °C"
-        ],
-        "correctIndex": 2,
-        "rationale": "Para huevo fresco en tortilla se recomienda alcanzar 75 °C en centro."
-      },
-      {
-        "q": "Recepción de congelados:",
-        "options": [
-          "–18 °C (±3 °C) y envases íntegros.",
-          "0–4 °C y envases abiertos.",
-          "Cualquier temperatura si se ven duros."
-        ],
-        "correctIndex": 0,
-        "rationale": "Comprueba temperatura y estado del envase; rechazo si no cumple."
-      },
-      {
-        "q": "Verduras para consumo en crudo:",
-        "options": [
-          "Cortar primero y luego lavar.",
-          "Lavar enteras, desinfectar y enjuagar.",
-          "No requieren desinfección."
-        ],
-        "correctIndex": 1,
-        "rationale": "Lavar enteras evita arrastrar suciedad al interior."
-      },
-      {
-        "q": "Aceites de fritura: cuándo renovar:",
-        "options": [
-          "Con humo, viscosidad, oscurecimiento o espuma.",
-          "Una vez por semana siempre.",
-          "Solo si cambia el sabor."
-        ],
-        "correctIndex": 0,
-        "rationale": "Esos signos indican degradación y compuestos indeseables."
-      },
-      {
-        "q": "Alergia vs. intolerancia:",
-        "options": [
-          "Ambas son inmunitarias.",
-          "La intolerancia es siempre más grave.",
-          "Alergia es inmunitaria; intolerancia es dificultad de digestión/metabolismo."
-        ],
-        "correctIndex": 2,
-        "rationale": "Diferenciar ambas para informar y etiquetar correctamente."
-      },
-      {
-        "q": "Anisakis en pescado a consumir crudo/marinado:",
-        "options": [
-          "Congelar a –20 °C ≥24 h.",
-          "Solo lavar con agua fría.",
-          "No requiere nada si es del día."
-        ],
-        "correctIndex": 0,
-        "rationale": "La congelación preventiva es obligada salvo exenciones específicas."
-      },
-      {
-        "q": "Mantenimiento en frío de elaboraciones >24 h:",
-        "options": [
-          "0–4 °C",
-          "0–8 °C",
-          "5–8 °C"
-        ],
-        "correctIndex": 0,
-        "rationale": "Para periodos largos, máximo 4 °C."
-      },
-      {
-        "q": "Gestión de residuos correcta:",
-        "options": [
-          "Tapa con pedal, limpieza y vaciado frecuente.",
-          "Abrir con la mano y vaciar al 100%.",
-          "Aceite por el desagüe con agua caliente."
-        ],
-        "correctIndex": 0,
-        "rationale": "Evita vectores y atascos; gestor autorizado para aceites."
-      },
-      {
-        "q": "Envasado al vacío tras elaboración:",
-        "options": [
-          "Conservar a ≤4 °C e identificar con fecha y lote.",
-          "Puede ir a ambiente si el cierre es bueno.",
-          "Reutilizar envases químicos si se lavan."
-        ],
-        "correctIndex": 0,
-        "rationale": "El vacío no sustituye el frío; trazabilidad imprescindible."
-      },
-      {
-        "q": "Plan de limpieza y desinfección (PLD):",
-        "options": [
-          "Improvisar según suciedad.",
-          "Debe estar documentado con qué, cómo, cuándo y quién.",
-          "Solo limpiar cuando venga inspección."
-        ],
-        "correctIndex": 1,
-        "rationale": "Procedimientos escritos y registros garantizan control higiénico."
-      },
-      {
-        "q": "Control de plagas (DDD):",
-        "options": [
-          "Dejar residuos de comida para atraer cebo.",
-          "Mantener orden/limpieza y contratar servicio autorizado con registros.",
-          "Solo usar insecticida doméstico."
-        ],
-        "correctIndex": 1,
-        "rationale": "Prevención + monitoreo profesional con trazabilidad."
-      },
-      {
-        "q": "Trazabilidad:",
-        "options": [
-          "Conservar albaranes/etiquetas y poder rastrear lotes.",
-          "No es necesaria si compro a diario.",
-          "Solo aplica a carne y pescado."
-        ],
-        "correctIndex": 0,
-        "rationale": "Permite identificar y retirar productos en caso de alerta."
-      },
-      {
-        "q": "Enfriamiento rápido de platos cocinados:",
-        "options": [
-          "De caliente a ≤8 °C en <2 h; usar abatidor o porcionar.",
-          "Esperar a que se temple a ambiente.",
-          "Tapar caliente y a cámara inmediatamente."
-        ],
-        "correctIndex": 0,
-        "rationale": "Cruzar la zona de peligro lo más rápido posible."
-      },
-      {
-        "q": "Almacenamiento en seco (despensa):",
-        "options": [
-          "10–21 °C, seco, limpio y ventilado; rotación FIFO/FEFO.",
-          "Cualquier temperatura si está cerrado.",
-          "Junto a productos químicos si están precintados."
-        ],
-        "correctIndex": 0,
-        "rationale": "Control ambiental y separación de químicos es esencial."
-      },
-      {
-        "q": "Manipulador con síntomas gastrointestinales:",
-        "options": [
-          "Puede trabajar en sala.",
-          "Debe comunicar y abandonar tareas de alimentos; valoración médica.",
-          "Solo usar doble guante."
-        ],
-        "correctIndex": 1,
-        "rationale": "Evitar el riesgo de transmisión por manos o gotículas."
-      },
-      {
-        "q": "Uso de paños:",
-        "options": [
-          "Reutilizar continuamente.",
-          "Paños diferenciados por uso o, mejor, papel desechable.",
-          "Cualquiera sirve."
-        ],
-        "correctIndex": 1,
-        "rationale": "Reduce contaminación cruzada entre zonas/tareas."
-      },
-      {
-        "q": "Descongelación en microondas:",
-        "options": [
-          "Permitida, seguido de cocción inmediata.",
-          "Prohibida.",
-          "Solo para pan."
-        ],
-        "correctIndex": 0,
-        "rationale": "Descongelar y cocinar sin demora evita proliferación."
-      },
-      {
-        "q": "Huevos con cáscara sucia o rota:",
-        "options": [
-          "Usarlos si se lavan bien.",
-          "No deben usarse en cocina; riesgo de contaminación.",
-          "Solo para bizcochos."
-        ],
-        "correctIndex": 1,
-        "rationale": "La cáscara dañada facilita entrada de microorganismos."
-      },
-      {
-        "q": "Cuchillos y tablas tras tocar crudo:",
-        "options": [
-          "Seguir con listo para consumo.",
-          "Lavar y desinfectar antes de cambiar de alimento.",
-          "Limpiar con servilleta."
-        ],
-        "correctIndex": 1,
-        "rationale": "Evita transferencia de patógenos a alimentos listos."
-      },
-      {
-        "q": "Mantenimiento en caliente en autoservicio/buffet:",
-        "options": [
-          "≥65 °C y control frecuente.",
-          "50–60 °C suficientes.",
-          "Cualquier temperatura si hay tapa."
-        ],
-        "correctIndex": 0,
-        "rationale": "La línea caliente exige control para evitar zona de peligro."
-      },
-      {
-        "q": "Recalentamiento de platos preparados:",
-        "options": [
-          "Alcanzar 70 °C en el centro en corto tiempo con equipo adecuado.",
-          "Al baño maría lento hasta templado.",
-          "Solo que humee."
-        ],
-        "correctIndex": 0,
-        "rationale": "Recalentar rápido hasta temperatura segura; no usar equipos lentos para elevar temperatura."
-      },
-      {
-        "q": "Hielo almacenado junto a pescado crudo:",
-        "options": [
-          "Admite contacto directo.",
-          "Separar y manipular con utensilios distintos.",
-          "No importa si el hielo se ve limpio."
-        ],
-        "correctIndex": 1,
-        "rationale": "Evita contaminación por goteos y contacto crudo-listo."
-      },
-      {
-        "q": "Etiquetado interno de elaboraciones:",
-        "options": [
-          "Fecha de elaboración, caducidad/consumo, lote y responsable.",
-          "No hace falta si es para hoy.",
-          "Solo el nombre del plato."
-        ],
-        "correctIndex": 0,
-        "rationale": "Facilita control de rotación, trazabilidad y responsabilidades."
-      },
-      {
-        "q": "Agua no potable por avería:",
-        "options": [
-          "Seguir operando igual.",
-          "Suspender preparaciones que requieran agua potable y usar agua segura embotellada; informar.",
-          "Hervir 1 minuto basta para todo."
-        ],
-        "correctIndex": 1,
-        "rationale": "Sin agua potable, limitar operaciones o usar fuentes seguras verificadas."
-      }
-    ]
-  },
-  {
-    "id": 3,
-    "level": "Difícil",
-    "color": "🔴",
-    "questions": [
-      {
-        "q": "Recepción: latas abolladas o hinchadas:",
-        "options": [
-          "Aceptar si el contenido huele bien.",
-          "Rechazar por posible contaminación/deterioro.",
-          "Abrir y cocinar de inmediato."
-        ],
-        "correctIndex": 1,
-        "rationale": "Envases alterados son criterio de rechazo por riesgo físico/químico/biológico."
-      },
-      {
-        "q": "Recalentar platos preparados de forma segura:",
-        "options": [
-          "Alcanzar 70 °C en el centro en menos de 1 hora con equipo adecuado.",
-          "Cualquier temperatura si se mantiene al baño maría.",
-          "60 °C basta si la salsa hierve."
-        ],
-        "correctIndex": 0,
-        "rationale": "Recalentamiento rápido hasta 70 °C; no usar equipos lentos como elevadores de temperatura."
-      },
-      {
-        "q": "Riesgo de acrilamida/PAH:",
-        "options": [
-          "Asociado a cocciones muy tostadas/quemadas en alimentos ricos en almidón.",
-          "Solo en frituras de pescado.",
-          "Sin relevancia sanitaria."
-        ],
-        "correctIndex": 0,
-        "rationale": "Evita tonalidades muy oscuras en patatas, pan y rebozados."
-      },
-      {
-        "q": "Clasificación de peligro: fragmento de cristal en un plato:",
-        "options": [
-          "Químico",
-          "Físico",
-          "Biológico"
-        ],
-        "correctIndex": 1,
-        "rationale": "Se trata de un peligro físico (cuerpo extraño)."
-      },
-      {
-        "q": "Control de equipos de frío:",
-        "options": [
-          "Sobrecargar cámaras para optimizar espacio.",
-          "Registrar temperaturas y permitir circulación de aire.",
-          "Mantener puertas abiertas en preparaciones largas."
-        ],
-        "correctIndex": 1,
-        "rationale": "No sobrecargar; registra temperaturas y deja espacio para el aire."
-      },
-      {
-        "q": "Herida en la mano del manipulador/a:",
-        "options": [
-          "Trabajar normal si es pequeña.",
-          "Desinfectar, cubrir con apósito impermeable visible y usar guante; informar.",
-          "Solo lavarse."
-        ],
-        "correctIndex": 1,
-        "rationale": "Las heridas son foco de contaminación; proteger y valorar aptitud."
-      },
-      {
-        "q": "Separación en almacenamiento (una cámara):",
-        "options": [
-          "Pescados crudos arriba.",
-          "Cocinados arriba; crudos abajo; evitar cartones dentro.",
-          "Verduras crudas sobre cocinados para frescor."
-        ],
-        "correctIndex": 1,
-        "rationale": "Evita goteos de crudos sobre listos; reduce materiales porosos dentro de cámara."
-      },
-      {
-        "q": "Enfriamiento rápido de platos cocinados:",
-        "options": [
-          "A ≤8 °C en <2 h; abatidor o porciones pequeñas.",
-          "Esperar a ambiente hasta templado.",
-          "Tapar caliente y guardar en cámara."
-        ],
-        "correctIndex": 0,
-        "rationale": "Cruza la zona de peligro lo antes posible."
-      },
-      {
-        "q": "Conductas personales adecuadas:",
-        "options": [
-          "Peinarse en cocina con cofia.",
-          "Evitar tocarse la cara; toser/estornudar en pañuelo desechable y lavarse manos después.",
-          "Usar el mismo paño para manos y encimera."
-        ],
-        "correctIndex": 1,
-        "rationale": "Minimiza transferencias de microorganismos."
-      },
-      {
-        "q": "Descongelación de mariscos grandes:",
-        "options": [
-          "En nevera sobre rejilla y bandeja para goteos; tiempo planificado.",
-          "A temperatura ambiente por rapidez.",
-          "Bajo agua caliente para acelerar."
-        ],
-        "correctIndex": 0,
-        "rationale": "Evita zona de peligro y contaminación de superficies."
-      },
-      {
-        "q": "Gestión de alérgenos en cocina:",
-        "options": [
-          "Producir todos los platos en la misma zona.",
-          "Separar preparación, utensilios y almacenamiento; limpiar y etiquetar correctamente.",
-          "Solo avisar verbalmente al cliente."
-        ],
-        "correctIndex": 1,
-        "rationale": "La separación física/procedimental y limpieza evitan trazas accidentales."
-      },
-      {
-        "q": "Pescado listo para consumo en cámara junto a carne cruda destapada:",
-        "options": [
-          "Aceptar si hay rejilla.",
-          "Inaceptable: riesgo de goteo/olores y contaminación cruzada.",
-          "Da igual si se consume hoy."
-        ],
-        "correctIndex": 1,
-        "rationale": "Los listos para consumo deben estar alejados de crudos y siempre protegidos."
-      },
-      {
-        "q": "Higienización de cortadoras de fiambre:",
-        "options": [
-          "Diaria al final del turno.",
-          "Tras cada cambio de producto y, como mínimo, varias veces al día según uso; desmontar piezas.",
-          "Solo pasar un paño húmedo."
-        ],
-        "correctIndex": 1,
-        "rationale": "Desmontaje y desinfección periódica previene biofilms."
-      },
-      {
-        "q": "Huevos pasteurizados vs. frescos en elaboraciones crudas (mahonesa):",
-        "options": [
-          "Ambos equivalentes.",
-          "Preferir pasteurizados para evitar Salmonella.",
-          "Usar frescos si están fríos."
-        ],
-        "correctIndex": 1,
-        "rationale": "Los pasteurizados reducen riesgo en salsas/cremas no sometidas a calor."
-      },
-      {
-        "q": "Cuchillos con mango dañado:",
-        "options": [
-          "Pueden usarse si se desinfectan.",
-          "Reemplazar; pueden albergar suciedad y desprender fragmentos.",
-          "Cubrir con cinta."
-        ],
-        "correctIndex": 1,
-        "rationale": "Riesgo físico y microbiológico por grietas y desprendimientos."
-      },
-      {
-        "q": "Carnes marinadas para consumir poco hechas:",
-        "options": [
-          "El marinado elimina patógenos.",
-          "El marinado no sustituye la cocción a temperatura segura.",
-          "Se pueden dejar a temperatura ambiente."
-        ],
-        "correctIndex": 1,
-        "rationale": "Los ácidos reducen carga pero no garantizan inocuidad; cocinar adecuadamente."
-      },
-      {
-        "q": "Desinfectantes alimentarios:",
-        "options": [
-          "Usar cualquiera de uso doméstico.",
-          "Usar productos autorizados, respetando concentración y tiempo de contacto.",
-          "Cuanto más concentrado mejor."
-        ],
-        "correctIndex": 1,
-        "rationale": "Seguir etiqueta garantiza eficacia sin residuos peligrosos."
-      },
-      {
-        "q": "Recepción de pescado fresco:",
-        "options": [
-          "Olor fuerte a amoníaco es normal.",
-          "Ojos brillantes, agallas rojas y olor marino suave.",
-          "Puede venir parcialmente descongelado sin indicarlo."
-        ],
-        "correctIndex": 1,
-        "rationale": "Los signos organolépticos indican frescura; la descongelación debe declararse."
-      },
-      {
-        "q": "Cocción de aves (aves enteras y piezas):",
-        "options": [
-          "60 °C en centro es suficiente.",
-          "≥74–75 °C en el centro del producto.",
-          "Depende del color del jugo."
-        ],
-        "correctIndex": 1,
-        "rationale": "Las aves requieren temperaturas internas más altas por riesgo de Salmonella/Campylobacter."
-      },
-      {
-        "q": "Descongelación en agua:",
-        "options": [
-          "Permitida sumergiendo en agua potable fría y protegida, cambiando agua; cocinar inmediatamente.",
-          "Siempre prohibida.",
-          "En agua caliente para acelerar."
-        ],
-        "correctIndex": 0,
-        "rationale": "La técnica puede usarse con control estricto y cocción inmediata."
-      },
-      {
-        "q": "Productos químicos de limpieza:",
-        "options": [
-          "Pueden almacenarse junto a alimentos si están cerrados.",
-          "Separar en armario específico señalizado; nunca sobre alimentos.",
-          "Dejar envases sin etiqueta si se reconoce el contenido."
-        ],
-        "correctIndex": 1,
-        "rationale": "Evita contaminación química y confusiones; etiquetado obligatorio."
-      },
-      {
-        "q": "Deshuesado de jamón/queso en sala fría y corte en caliente:",
-        "options": [
-          "Admisible sin limpieza intermedia.",
-          "Requiere limpieza/desinfección y separación de zonas/equipos o tiempos.",
-          "No necesita control."
-        ],
-        "correctIndex": 1,
-        "rationale": "Evita transporte de microorganismos entre zonas con distinta temperatura y riesgo."
-      },
-      {
-        "q": "Uso de termómetros sonda:",
-        "options": [
-          "No es necesario si hay experiencia.",
-          "Calibrar, limpiar y desinfectar la sonda antes/después; medir en el centro.",
-          "Solo mirar el color del alimento."
-        ],
-        "correctIndex": 1,
-        "rationale": "La medición objetiva asegura temperaturas de seguridad."
-      },
-      {
-        "q": "Gestión de devoluciones/retiros por alerta alimentaria:",
-        "options": [
-          "No procede en hostelería.",
-          "Tener procedimiento de trazabilidad inversa para localizar lotes y retirarlos.",
-          "Informar solo si lo piden."
-        ],
-        "correctIndex": 1,
-        "rationale": "Permite actuar con rapidez ante alertas para proteger a los clientes."
-      },
-      {
-        "q": "Carne picada elaborada en local:",
-        "options": [
-          "Se puede guardar 48 h en frío.",
-          "Consumir cuanto antes; si se conserva, ≤24 h a ≤4 °C y perfectamente identificada.",
-          "Se puede mantener a 8–10 °C."
-        ],
-        "correctIndex": 1,
-        "rationale": "Producto muy perecedero por su elevada superficie y manipulación."
-      }
-    ]
-  }
-];
+/* ===== OPCIONAL: URL de tu Worker/endpoint si quieres guardar en GitHub ===== */
+var ENDPOINT_URL = ""; // déjalo vacío si no lo usas
 
-/* ==========================================================
-   LÓGICA DEL QUIZ
-   ========================================================== */
-const el = sel => document.querySelector(sel);
-const screenStart = el('#screen-start');
-const screenQuiz  = el('#screen-quiz');
-const screenEnd   = el('#screen-end');
-const picker      = el('#picker');
-const chipLevel   = el('#chip-level');
-const scoreMini   = el('#score-mini');
-const totalMini   = el('#total-mini');
-const bar         = el('#bar');
-const qIdxEl      = el('#q-idx');
-const qCountEl    = el('#q-count');
-const qTitle      = el('#q-title');
-const choicesBox  = el('#choices');
-const explainBox  = el('#explain');
-const btnNext     = el('#btn-next');
-const btnNextBlock= el('#btn-next-block');
-const btnRestart  = el('#btn-restart');
-const endSub      = el('#end-sub');
-const endSummary  = el('#end-summary');
-
-let state = {
-  blockIndex: 0,
-  qIndex: 0,
-  score: 0,
-  locked: false,
+/* ===== 3 BLOQUES × 25 PREGUNTAS ===== */
+var BLOCKS = {
+"1":{"id":1,"level":"Fácil","questions":[
+{"q":"¿Qué es la contaminación cruzada?","options":["Cuando un alimento pierde sabor por el frío.","La transferencia de microorganismos o alérgenos entre alimentos por contacto directo o indirecto.","La mezcla voluntaria de dos alimentos compatibles."],"correctIndex":1,"rationale":"Puede producirse por manos, utensilios, paños o superficies; separa crudos de listos para consumo."},
+{"q":"Temperatura correcta de refrigeración para alimentos frescos en general:","options":["0–4 °C","10–14 °C","–5–0 °C"],"correctIndex":0,"rationale":"La proliferación microbiana se ralentiza a 0–4 °C; vigila con termómetro."},
+{"q":"¿Se pueden descongelar alimentos a temperatura ambiente?","options":["Sí, si se cocinan luego.","No, deben descongelarse en nevera o microondas.","Sí, si se cubren con film."],"correctIndex":1,"rationale":"La descongelación a temperatura ambiente favorece el crecimiento microbiano superficial."},
+{"q":"Temperatura mínima en el centro del producto para una cocción segura general:","options":["55 °C","70 °C","90 °C"],"correctIndex":1,"rationale":"70 °C en el centro es referencia de seguridad; huevo fresco en tortilla requiere 75 °C."},
+{"q":"Uso de guantes:","options":["Sustituyen el lavado de manos.","No eximen del lavado y deben cambiarse con frecuencia.","Pueden usarse todo el día."],"correctIndex":1,"rationale":"Los guantes no sustituyen la higiene de manos; cámbialos al cambiar de tarea."},
+{"q":"Orden en frigorífico único para evitar contaminación cruzada:","options":["Crudos arriba y cocinados abajo.","Cocinados arriba y crudos abajo.","Todo mezclado si está tapado."],"correctIndex":1,"rationale":"Coloca cocinados arriba para evitar goteos de crudos sobre alimentos listos para consumo."},
+{"q":"Mantenimiento en caliente antes del servicio (mínimo en el centro del alimento):","options":["45 °C","65 °C","80 °C"],"correctIndex":1,"rationale":"Mantener a ≥65 °C reduce el riesgo de crecimiento microbiano."},
+{"q":"¿Cuándo debes lavarte las manos?","options":["Solo al empezar el turno.","Antes de manipular alimentos y tras tocar crudos, basura, móvil, toser, ir al baño, etc.","Cada hora."],"correctIndex":1,"rationale":"Siempre que se cambie de tarea o haya posibilidad de contaminación."},
+{"q":"¿Se pueden volver a congelar alimentos ya descongelados?","options":["Sí, siempre.","No, nunca.","Solo si no han perdido el vacío."],"correctIndex":1,"rationale":"No recongelar: aumenta el riesgo de proliferación y deterioro."},
+{"q":"¿Qué no debes hacer al manipular alimentos?","options":["Usar paños de cocina para múltiples tareas.","Probar con cuchara limpia y lavarla después.","Usar utensilios para tocar alimentos listos."],"correctIndex":0,"rationale":"Evita paños reutilizados; mejor papel desechable y paños diferenciados."},
+{"q":"Lavado de frutas/verduras crudas:","options":["No es necesario si se ven limpias.","Lavar enteras bajo el grifo y desinfectar según protocolo.","Cortar primero y luego lavar."],"correctIndex":1,"rationale":"Lavar la pieza entera primero evita que la suciedad entre en el interior."},
+{"q":"Para reducir anisakis en pescado crudo/marinado:","options":["Solo lavarlo con agua fría.","Congelar a –20 °C ≥24 h antes del servicio.","Cocinarlos a 50 °C."],"correctIndex":1,"rationale":"La congelación a –20 °C durante al menos 24 h inactiva anisakis."},
+{"q":"Conservación de platos elaborados para >24 h:","options":["0–4 °C","0–8 °C","5–8 °C"],"correctIndex":0,"rationale":"Para duraciones largas, 0–4 °C; si <24 h, hasta 8 °C."},
+{"q":"Gestión de residuos:","options":["Abrir contenedores con pedal y limpiarlos a diario.","Vaciar solo al 100% y abrir con la mano.","Verter aceite usado por el fregadero."],"correctIndex":0,"rationale":"Evita contacto manual y vierte aceites en gestores autorizados."},
+{"q":"Higiene personal correcta:","options":["Usar joyas si están limpias.","Uñas cortas, sin esmalte; cabello recogido y cubierto.","Perfume intenso para tapar olores."],"correctIndex":1,"rationale":"Las joyas y esmaltes pueden desprenderse/contaminar; el cabello debe estar controlado."},
+{"q":"Equipamiento de corte (tablas y cuchillos):","options":["Usar la misma tabla para todo.","Diferenciar por código de color o uso.","Solo importa que estén afilados."],"correctIndex":1,"rationale":"Separar tablas por uso reduce contaminación cruzada."},
+{"q":"Limpieza de superficies:","options":["Primero desinfectar y luego limpiar.","Primero limpiar con detergente, después desinfectar.","Solo agua caliente."],"correctIndex":1,"rationale":"La materia orgánica inactiva desinfectantes; limpia antes de desinfectar."},
+{"q":"Cadena de frío en recepción:","options":["No es importante si el transporte fue corto.","Registrar temperaturas y almacenar de inmediato.","Esperar a terminar otras tareas."],"correctIndex":1,"rationale":"Las temperaturas deben verificarse y los productos entrar a cámara sin demora."},
+{"q":"Fecha de caducidad vs. consumo preferente:","options":["Son lo mismo.","Caducidad: seguridad; Preferente: calidad.","Preferente es más estricta que caducidad."],"correctIndex":1,"rationale":"La caducidad implica riesgo sanitario tras la fecha; consumo preferente afecta cualidades organolépticas."},
+{"q":"Descongelación segura de grandes piezas:","options":["En nevera, sobre rejilla, recipientes que recojan goteos.","A temperatura ambiente sobre la mesa.","Bajo agua caliente."],"correctIndex":0,"rationale":"Evita goteos y superficies a temperatura de peligro."},
+{"q":"Toma de temperatura del alimento:","options":["Cualquier zona sirve.","En el centro del producto y zonas más gruesas.","En la superficie."],"correctIndex":1,"rationale":"El punto más frío suele ser el centro; verifica allí."},
+{"q":"Uso del móvil en cocina:","options":["Permitido si es rápido.","Evitarlo; si se usa, lavar manos después.","No influye."],"correctIndex":1,"rationale":"El móvil es un vector de contaminación; higiene posterior obligatoria."},
+{"q":"Desinfección de hojas verdes:","options":["Jabón suave.","Agua con desinfectante alimentario según etiqueta.","Vinagre casero siempre."],"correctIndex":1,"rationale":"Usa productos autorizados y respeta tiempos/concentraciones."},
+{"q":"Manipulación de hielo para bebidas:","options":["Con las manos limpias.","Con pinzas o cubitera y utensilios limpios.","Cualquier método sirve."],"correctIndex":1,"rationale":"El hielo es alimento; manipúlalo con utensilios limpios para evitar contaminación."},
+{"q":"Alérgenos:","options":["Basta con avisar verbalmente.","Debes conocer y poder informar por escrito de los alérgenos presentes.","No es obligatorio informar."],"correctIndex":1,"rationale":"La información de alérgenos debe ser clara, accesible y fiable para el cliente."}
+]},
+"2":{"id":2,"level":"Medio","questions":[
+{"q":"Zona de peligro de temperaturas para crecimiento microbiano (aprox.):","options":["10–64 °C","–18–0 °C","65–90 °C"],"correctIndex":0,"rationale":"Evita mantener alimentos en ese rango durante tiempos prolongados."},
+{"q":"Huevos en elaboraciones (p. ej., tortillas): temperatura de seguridad en el centro:","options":["60 °C","70 °C","75 °C"],"correctIndex":2,"rationale":"Para huevo fresco en tortilla se recomienda alcanzar 75 °C en centro."},
+{"q":"Recepción de congelados:","options":["–18 °C (±3 °C) y envases íntegros.","0–4 °C y envases abiertos.","Cualquier temperatura si se ven duros."],"correctIndex":0,"rationale":"Comprueba temperatura y estado del envase; rechazo si no cumple."},
+{"q":"Verduras para consumo en crudo:","options":["Cortar primero y luego lavar.","Lavar enteras, desinfectar y enjuagar.","No requieren desinfección."],"correctIndex":1,"rationale":"Lavar enteras evita arrastrar suciedad al interior."},
+{"q":"Aceites de fritura: cuándo renovar:","options":["Con humo, viscosidad, oscurecimiento o espuma.","Una vez por semana siempre.","Solo si cambia el sabor."],"correctIndex":0,"rationale":"Esos signos indican degradación y compuestos indeseables."},
+{"q":"Alergia vs. intolerancia:","options":["Ambas son inmunitarias.","La intolerancia es siempre más grave.","Alergia es inmunitaria; intolerancia es dificultad de digestión/metabolismo."],"correctIndex":2,"rationale":"Diferenciar ambas para informar y etiquetar correctamente."},
+{"q":"Anisakis en pescado a consumir crudo/marinado:","options":["Congelar a –20 °C ≥24 h.","Solo lavar con agua fría.","No requiere nada si es del día."],"correctIndex":0,"rationale":"La congelación preventiva es obligada salvo exenciones específicas."},
+{"q":"Mantenimiento en frío de elaboraciones >24 h:","options":["0–4 °C","0–8 °C","5–8 °C"],"correctIndex":0,"rationale":"Para periodos largos, máximo 4 °C."},
+{"q":"Gestión de residuos correcta:","options":["Tapa con pedal, limpieza y vaciado frecuente.","Abrir con la mano y vaciar al 100%.","Aceite por el desagüe con agua caliente."],"correctIndex":0,"rationale":"Evita vectores y atascos; gestor autorizado para aceites."},
+{"q":"Envasado al vacío tras elaboración:","options":["Conservar a ≤4 °C e identificar con fecha y lote.","Puede ir a ambiente si el cierre es bueno.","Reutilizar envases químicos si se lavan."],"correctIndex":0,"rationale":"El vacío no sustituye el frío; trazabilidad imprescindible."},
+{"q":"Plan de limpieza y desinfección (PLD):","options":["Improvisar según suciedad.","Debe estar documentado con qué, cómo, cuándo y quién.","Solo limpiar cuando venga inspección."],"correctIndex":1,"rationale":"Procedimientos escritos y registros garantizan control higiénico."},
+{"q":"Control de plagas (DDD):","options":["Dejar residuos de comida para atraer cebo.","Mantener orden/limpieza y contratar servicio autorizado con registros.","Solo usar insecticida doméstico."],"correctIndex":1,"rationale":"Prevención + monitoreo profesional con trazabilidad."},
+{"q":"Trazabilidad:","options":["Conservar albaranes/etiquetas y poder rastrear lotes.","No es necesaria si compro a diario.","Solo aplica a carne y pescado."],"correctIndex":0,"rationale":"Permite identificar y retirar productos en caso de alerta."},
+{"q":"Enfriamiento rápido de platos cocinados:","options":["De caliente a ≤8 °C en <2 h; usar abatidor o porcionar.","Esperar a que se temple a ambiente.","Tapar caliente y a cámara inmediatamente."],"correctIndex":0,"rationale":"Cruzar la zona de peligro lo más rápido posible."},
+{"q":"Almacenamiento en seco (despensa):","options":["10–21 °C, seco, limpio y ventilado; rotación FIFO/FEFO.","Cualquier temperatura si está cerrado.","Junto a productos químicos si están precintados."],"correctIndex":0,"rationale":"Control ambiental y separación de químicos es esencial."},
+{"q":"Manipulador con síntomas gastrointestinales:","options":["Puede trabajar en sala.","Debe comunicar y abandonar tareas de alimentos; valoración médica.","Solo usar doble guante."],"correctIndex":1,"rationale":"Evitar el riesgo de transmisión por manos o gotículas."},
+{"q":"Uso de paños:","options":["Reutilizar continuamente.","Paños diferenciados por uso o, mejor, papel desechable.","Cualquiera sirve."],"correctIndex":1,"rationale":"Reduce contaminación cruzada entre zonas/tareas."},
+{"q":"Descongelación en microondas:","options":["Permitida, seguido de cocción inmediata.","Prohibida.","Solo para pan."],"correctIndex":0,"rationale":"Descongelar y cocinar sin demora evita proliferación."},
+{"q":"Huevos con cáscara sucia o rota:","options":["Usarlos si se lavan bien.","No deben usarse en cocina; riesgo de contaminación.","Solo para bizcochos."],"correctIndex":1,"rationale":"La cáscara dañada facilita entrada de microorganismos."},
+{"q":"Cuchillos y tablas tras tocar crudo:","options":["Seguir con listo para consumo.","Lavar y desinfectar antes de cambiar de alimento.","Limpiar con servilleta."],"correctIndex":1,"rationale":"Evita transferencia de patógenos a alimentos listos."},
+{"q":"Mantenimiento en caliente en autoservicio/buffet:","options":["≥65 °C y control frecuente.","50–60 °C suficientes.","Cualquier temperatura si hay tapa."],"correctIndex":0,"rationale":"La línea caliente exige control para evitar zona de peligro."},
+{"q":"Recalentamiento de platos preparados:","options":["Alcanzar 70 °C en el centro en corto tiempo con equipo adecuado.","Al baño maría lento hasta templado.","Solo que humee."],"correctIndex":0,"rationale":"Recalentar rápido hasta temperatura segura; no usar equipos lentos para elevar temperatura."},
+{"q":"Hielo almacenado junto a pescado crudo:","options":["Admite contacto directo.","Separar y manipular con utensilios distintos.","No importa si el hielo se ve limpio."],"correctIndex":1,"rationale":"Evita contaminación por goteos y contacto crudo-listo."},
+{"q":"Etiquetado interno de elaboraciones:","options":["Fecha de elaboración, caducidad/consumo, lote y responsable.","No hace falta si es para hoy.","Solo el nombre del plato."],"correctIndex":0,"rationale":"Facilita control de rotación, trazabilidad y responsabilidades."},
+{"q":"Agua no potable por avería:","options":["Seguir operando igual.","Suspender preparaciones que requieran agua potable y usar agua segura embotellada; informar.","Hervir 1 minuto basta para todo."],"correctIndex":1,"rationale":"Sin agua potable, limitar operaciones o usar fuentes seguras verificadas."}
+]},
+"3":{"id":3,"level":"Difícil","questions":[
+{"q":"Recepción: latas abolladas o hinchadas:","options":["Aceptar si el contenido huele bien.","Rechazar por posible contaminación/deterioro.","Abrir y cocinar de inmediato."],"correctIndex":1,"rationale":"Envases alterados son criterio de rechazo por riesgo físico/químico/biológico."},
+{"q":"Recalentar platos preparados de forma segura:","options":["Alcanzar 70 °C en el centro en menos de 1 hora con equipo adecuado.","Cualquier temperatura si se mantiene al baño maría.","60 °C basta si la salsa hierve."],"correctIndex":0,"rationale":"Recalentamiento rápido hasta 70 °C; no usar equipos lentos como elevadores de temperatura."},
+{"q":"Riesgo de acrilamida/PAH:","options":["Asociado a cocciones muy tostadas/quemadas en alimentos ricos en almidón.","Solo en frituras de pescado.","Sin relevancia sanitaria."],"correctIndex":0,"rationale":"Evita tonalidades muy oscuras en patatas, pan y rebozados."},
+{"q":"Clasificación de peligro: fragmento de cristal en un plato:","options":["Químico","Físico","Biológico"],"correctIndex":1,"rationale":"Se trata de un peligro físico (cuerpo extraño)."},
+{"q":"Control de equipos de frío:","options":["Sobrecargar cámaras para optimizar espacio.","Registrar temperaturas y permitir circulación de aire.","Mantener puertas abiertas en preparaciones largas."],"correctIndex":1,"rationale":"No sobrecargar; registra temperaturas y deja espacio para el aire."},
+{"q":"Herida en la mano del manipulador/a:","options":["Trabajar normal si es pequeña.","Desinfectar, cubrir con apósito impermeable visible y usar guante; informar.","Solo lavarse."],"correctIndex":1,"rationale":"Las heridas son foco de contaminación; proteger y valorar aptitud."},
+{"q":"Separación en almacenamiento (una cámara):","options":["Pescados crudos arriba.","Cocinados arriba; crudos abajo; evitar cartones dentro.","Verduras crudas sobre cocinados para frescor."],"correctIndex":1,"rationale":"Evita goteos de crudos sobre listos; reduce materiales porosos dentro de cámara."},
+{"q":"Enfriamiento rápido de platos cocinados:","options":["A ≤8 °C en <2 h; abatidor o porciones pequeñas.","Esperar a ambiente hasta templado.","Tapar caliente y guardar en cámara."],"correctIndex":0,"rationale":"Cruza la zona de peligro lo antes posible."},
+{"q":"Conductas personales adecuadas:","options":["Peinarse en cocina con cofia.","Evitar tocarse la cara; toser/estornudar en pañuelo desechable y lavarse manos después.","Usar el mismo paño para manos y encimera."],"correctIndex":1,"rationale":"Minimiza transferencias de microorganismos."},
+{"q":"Descongelación de mariscos grandes:","options":["En nevera sobre rejilla y bandeja para goteos; tiempo planificado.","A temperatura ambiente por rapidez.","Bajo agua caliente para acelerar."],"correctIndex":0,"rationale":"Evita zona de peligro y contaminación de superficies."},
+{"q":"Gestión de alérgenos en cocina:","options":["Producir todos los platos en la misma zona.","Separar preparación, utensilios y almacenamiento; limpiar y etiquetar correctamente.","Solo avisar verbalmente al cliente."],"correctIndex":1,"rationale":"La separación física/procedimental y limpieza evitan trazas accidentales."},
+{"q":"Pescado listo para consumo en cámara junto a carne cruda destapada:","options":["Aceptar si hay rejilla.","Inaceptable: riesgo de goteo/olores y contaminación cruzada.","Da igual si se consume hoy."],"correctIndex":1,"rationale":"Los listos para consumo deben estar alejados de crudos y siempre protegidos."},
+{"q":"Higienización de cortadoras de fiambre:","options":["Diaria al final del turno.","Tras cada cambio de producto y, como mínimo, varias veces al día según uso; desmontar piezas.","Solo pasar un paño húmedo."],"correctIndex":1,"rationale":"Desmontaje y desinfección periódica previene biofilms."},
+{"q":"Huevos pasteurizados vs. frescos en elaboraciones crudas (mahonesa):","options":["Ambos equivalentes.","Preferir pasteurizados para evitar Salmonella.","Usar frescos si están fríos."],"correctIndex":1,"rationale":"Los pasteurizados reducen riesgo en salsas/cremas no sometidas a calor."},
+{"q":"Cuchillos con mango dañado:","options":["Pueden usarse si se desinfectan.","Reemplazar; pueden albergar suciedad y desprender fragmentos.","Cubrir con cinta."],"correctIndex":1,"rationale":"Riesgo físico y microbiológico por grietas y desprendimientos."},
+{"q":"Carnes marinadas para consumir poco hechas:","options":["El marinado elimina patógenos.","El marinado no sustituye la cocción a temperatura segura.","Se pueden dejar a temperatura ambiente."],"correctIndex":1,"rationale":"Los ácidos reducen carga pero no garantizan inocuidad; cocinar adecuadamente."},
+{"q":"Desinfectantes alimentarios:","options":["Usar cualquiera de uso doméstico.","Usar productos autorizados, respetando concentración y tiempo de contacto.","Cuanto más concentrado mejor."],"correctIndex":1,"rationale":"Seguir etiqueta garantiza eficacia sin residuos peligrosos."},
+{"q":"Recepción de pescado fresco:","options":["Olor fuerte a amoníaco es normal.","Ojos brillantes, agallas rojas y olor marino suave.","Puede venir parcialmente descongelado sin indicarlo."],"correctIndex":1,"rationale":"Los signos organolépticos indican frescura; la descongelación debe declararse."},
+{"q":"Cocción de aves (aves enteras y piezas):","options":["60 °C en centro es suficiente.","≥74–75 °C en el centro del producto.","Depende del color del jugo."],"correctIndex":1,"rationale":"Las aves requieren temperaturas internas más altas por riesgo de Salmonella/Campylobacter."},
+{"q":"Descongelación en agua:","options":["Permitida sumergiendo en agua potable fría y protegida, cambiando agua; cocinar inmediatamente.","Siempre prohibida.","En agua caliente para acelerar."],"correctIndex":0,"rationale":"La técnica puede usarse con control estricto y cocción inmediata."},
+{"q":"Productos químicos de limpieza:","options":["Pueden almacenarse junto a alimentos si están cerrados.","Separar en armario específico señalizado; nunca sobre alimentos.","Dejar envases sin etiqueta si se reconoce el contenido."],"correctIndex":1,"rationale":"Evita contaminación química y confusiones; etiquetado obligatorio."},
+{"q":"Deshuesado de jamón/queso en sala fría y corte en caliente:","options":["Admisible sin limpieza intermedia.","Requiere limpieza/desinfección y separación de zonas/equipos o tiempos.","No necesita control."],"correctIndex":1,"rationale":"Evita transporte de microorganismos entre zonas con distinta temperatura y riesgo."},
+{"q":"Uso de termómetros sonda:","options":["No es necesario si hay experiencia.","Calibrar, limpiar y desinfectar la sonda antes/después; medir en el centro.","Solo mirar el color del alimento."],"correctIndex":1,"rationale":"La medición objetiva asegura temperaturas de seguridad."},
+{"q":"Gestión de devoluciones/retiros por alerta alimentaria:","options":["No procede en hostelería.","Tener procedimiento de trazabilidad inversa para localizar lotes y retirarlos.","Informar solo si lo piden."],"correctIndex":1,"rationale":"Permite actuar con rapidez ante alertas para proteger a los clientes."},
+{"q":"Carne picada elaborada en local:","options":["Se puede guardar 48 h en frío.","Consumir cuanto antes; si se conserva, ≤24 h a ≤4 °C y perfectamente identificada.","Se puede mantener a 8–10 °C."],"correctIndex":1,"rationale":"Producto muy perecedero por su elevada superficie y manipulación."}
+]}
 };
 
-function formatCount(n){ return n.toString().padStart(2,'0'); }
+/* ===== LÓGICA ===== */
+const $ = s => document.querySelector(s);
+let st={block:"1",idx:0,score:0,answers:[],ok:0,bad:0,total:0};
 
-function renderPicker(){
-  picker.innerHTML = '';
-  blocks.forEach((b, i)=>{
-    const div = document.createElement('button');
-    div.type="button";
-    div.className = 'block';
-    div.innerHTML = `
-      <div class="tag">Bloque ${b.id} · ${b.level}</div>
-      <div class="lv">${b.color} Nivel ${b.id}</div>
-      <div class="desc">${b.questions.length || 0} preguntas cargadas · objetivo 25</div>
-      <span class="go">Empezar<span aria-hidden="true">➜</span></span>
-    `;
-    div.addEventListener('click', ()=> startBlock(i));
-    picker.appendChild(div);
-  });
+function showStart(){
+  $("#home").style.display="block";
+  $("#quiz").style.display="none";
+  $("#end").style.display="none";
+  $("#topStatus").textContent = "En portada";
+  window.scrollTo(0,0);
 }
-renderPicker();
 
-function startBlock(i){
-  state = { blockIndex:i, qIndex:0, score:0, locked:false };
-  history.pushState({page:'quiz'}, '', '#quiz'); // Protege atrás
-  screenStart.classList.add('hidden');
-  screenEnd.classList.add('hidden');
-  screenQuiz.classList.remove('hidden');
-  chipLevel.textContent = `Bloque ${blocks[i].id} · ${blocks[i].level}`;
-  totalMini.textContent = blocks[i].questions.length;
+function startBlock(n){
+  const b=BLOCKS[n];
+  st={block:n,idx:0,score:0,answers:[],ok:0,bad:0,total:b.questions.length};
+  $("#home").style.display="none";
+  $("#end").style.display="none";
+  $("#quiz").style.display="block";
+  $("#head").textContent="Bloque "+b.id+" · "+b.level;
+  $("#statOk").textContent=0; $("#statBad").textContent=0;
+  $("#statQ").textContent=0; $("#statTotal").textContent=b.questions.length;
+  $("#bar").style.width="0%";
+  $("#topStatus").textContent = "Bloque "+b.id+" · "+b.level+" — 0/"+b.questions.length+" · ✅0 · ❌0";
   renderQuestion();
+  window.scrollTo(0,0);
 }
 
 function renderQuestion(){
-  const b = blocks[state.blockIndex];
-  const total = b.questions.length;
-  if(state.qIndex >= total){
-    return endBlock();
-  }
-  const q = b.questions[state.qIndex];
-  qIdxEl.textContent = `Pregunta ${formatCount(state.qIndex+1)}`;
-  qCountEl.textContent = `/ ${formatCount(total)}`;
-  qTitle.textContent = q.q;
-  bar.style.width = `${((state.qIndex)/Math.max(total,1))*100}%`;
-  scoreMini.textContent = state.score;
-  choicesBox.innerHTML = '';
-  explainBox.classList.add('hidden');
-  explainBox.innerHTML = '';
-  btnNext.disabled = true;
-  state.locked = false;
-
-  q.options.forEach((text, idx)=>{
-    const c = document.createElement('div');
-    c.className = 'choice';
-    c.innerHTML = `
-      <div class="bullet" aria-hidden="true"></div>
-      <div>${text}</div>
-    `;
-    c.addEventListener('click', ()=> onSelect(idx));
-    choicesBox.appendChild(c);
+  const b=BLOCKS[st.block];
+  if(st.idx>=b.questions.length){ return endBlock(); }
+  const q=b.questions[st.idx];
+  $("#qtitle").textContent="P"+(st.idx+1)+". "+q.q;
+  $("#choices").innerHTML=""; $("#explain").style.display="none"; $("#explain").innerHTML="";
+  $("#next").disabled=true;
+  q.options.forEach((t,i)=>{
+    const d=document.createElement("div");
+    d.className="choice"; d.textContent=t;
+    d.onclick=function(){ select(i); };
+    $("#choices").appendChild(d);
   });
+  $("#statQ").textContent=st.idx+1;
+  $("#progressText").textContent=(st.idx+1)+"/"+b.questions.length;
+  const pct=Math.round(100*(st.idx)/b.questions.length);
+  $("#bar").style.width=pct+"%";
+  $("#topStatus").textContent = "Bloque "+b.id+" · "+b.level+" — "+(st.idx)+"/"+b.questions.length+" · ✅"+st.ok+" · ❌"+st.bad;
 }
 
-function onSelect(idx){
-  if(state.locked) return;
-  state.locked = true;
-  const b = blocks[state.blockIndex];
-  const q = b.questions[state.qIndex];
-  const nodes = [...choicesBox.children];
-  nodes.forEach((node, i)=>{
-    node.classList.add('selected');
-    if(i === q.correctIndex){ node.classList.add('correct'); }
-    if(i === idx && i !== q.correctIndex){ node.classList.add('incorrect'); }
-  });
-  if(idx === q.correctIndex){ state.score++; scoreMini.textContent = state.score; }
+$("#next").onclick=function(){ st.idx++; renderQuestion(); };
 
-  explainBox.classList.remove('hidden');
-  explainBox.innerHTML = `
-    <div><b>Respuesta correcta:</b> ${q.options[q.correctIndex]}</div>
-    <div class="muted" style="margin-top:6px">${q.rationale}</div>
-  `;
-  btnNext.disabled = false;
+function select(i){
+  const b=BLOCKS[st.block], q=b.questions[st.idx];
+  const nodes=[...$("#choices").children];
+  nodes.forEach((n,ix)=>{ if(ix===q.correctIndex) n.classList.add("correct");
+                          if(ix===i && i!==q.correctIndex) n.classList.add("incorrect");
+                          n.onclick=null; });
+  const ok=(i===q.correctIndex); if(ok){ st.score++; st.ok++; } else { st.bad++; }
+  st.answers.push({q:q.q,selected:q.options[i],correct:q.options[q.correctIndex],ok,rationale:q.rationale});
+  $("#explain").style.display="block";
+  $("#explain").innerHTML="<b>Correcta:</b> "+q.options[q.correctIndex]+"<div style='margin-top:6px'>"+q.rationale+"</div>";
+  $("#next").disabled=false;
+
+  $("#statOk").textContent=st.ok; $("#statBad").textContent=st.bad;
+  const btot=b.questions.length;
+  $("#topStatus").textContent = "Bloque "+b.id+" · "+b.level+" — "+(st.idx+1)+"/"+btot+" · ✅"+st.ok+" · ❌"+st.bad;
+  const pct=Math.round(100*(st.idx+1)/btot); $("#bar").style.width=pct+"%";
 }
-
-btnNext.addEventListener('click', ()=>{
-  state.qIndex++;
-  renderQuestion();
-});
 
 function endBlock(){
-  screenQuiz.classList.add('hidden');
-  screenEnd.classList.remove('hidden');
-  const b = blocks[state.blockIndex];
-  const total = b.questions.length;
-  bar.style.width = '100%';
-  const pct = Math.round((state.score/Math.max(total,1))*100);
-  endSub.textContent = `Bloque ${b.id} · ${b.level} — ${state.score}/${total} correctas (${pct}%).`;
+  $("#quiz").style.display="none"; $("#end").style.display="block"; window.scrollTo(0,0);
+  const b=BLOCKS[st.block]; const pct=Math.round(100*st.score/b.questions.length);
+  $("#score").textContent="Aciertos: "+st.score+"/"+b.questions.length+" · "+pct+"%";
+  const wrong=st.answers.filter(a=>!a.ok);
+  $("#review").innerHTML = wrong.length ? wrong.map(a=>(
+    "<div style='border-left:4px solid var(--bad); padding-left:10px; margin:10px 0'>"+
+    "<div><b>"+a.q+"</b></div>"+
+    "<div>Tu respuesta: "+a.selected+" ❌</div>"+
+    "<div>Correcta: "+a.correct+" ✅</div>"+
+    "<div style='color:#475569'>"+a.rationale+"</div></div>"
+  )).join("") : "<p>🎉 Sin fallos en este bloque.</p>";
 
-  endSummary.innerHTML = `
-    <div class="pill ok">✅ Aciertos: <b>${state.score}</b></div>
-    <div class="pill bad">❌ Errores: <b>${total - state.score}</b></div>
-    <div class="pill warn">📊 Puntuación: <b>${pct}%</b></div>
-  `;
+  const text=wrong.map(a=>(a.q+" "+a.rationale).toLowerCase()).join(" ");
+  const tips=[]; if(/temperat|fr[ií]o|caliente|70|75|65/.test(text)) tips.push("Control de temperaturas (0–4 °C, ≥65 °C, ≥70–75 °C).");
+  if(/descongel/.test(text)) tips.push("Descongelación segura (nevera/microondas) y cocción inmediata.");
+  if(/al[eé]rgen|traz/.test(text)) tips.push("Gestión de alérgenos y trazabilidad documentada.");
+  if(/limpieza|desinfect/.test(text)) tips.push("Limpieza antes de desinfectar, respetando tiempos.");
+  $("#recommendation").textContent="Recomendación: "+(tips.length?tips.join(" "):"Buen desempeño; repite para consolidar.");
 
-  const nextBlock = state.blockIndex + 1;
-  btnNextBlock.textContent = nextBlock < blocks.length ? `Siguiente bloque (Nivel ${nextBlock+1})` : 'Finalizar';
-  btnNextBlock.onclick = ()=>{
-    if(nextBlock < blocks.length){
-      startBlock(nextBlock);
-    } else {
-      restartAll();
-    }
-  };
+  saveScore(pct, b.id, st.score, b.questions.length, wrong);
+  $("#topStatus").textContent = "Bloque "+b.id+" finalizado — ✅"+st.ok+" · ❌"+st.bad+" ("+pct+"%)";
 }
 
-btnRestart.addEventListener('click', restartAll);
+/* ===== Ranking (sin borrar) ===== */
+function getReg(){ try{return JSON.parse(localStorage.getItem("rankingFull")||"[]");}catch(e){return[];} }
+function setReg(r){ localStorage.setItem("rankingFull", JSON.stringify(r)); }
 
-function restartAll(){
-  history.pushState({page:'start'}, '', '#');
-  screenEnd.classList.add('hidden');
-  screenQuiz.classList.add('hidden');
-  screenStart.classList.remove('hidden');
-  renderPicker();
-}
-
-/* Bloqueo de retroceso del historial dentro del quiz */
-window.addEventListener('popstate', (e)=>{
-  if(!screenStart.classList.contains('hidden') && window.location.hash !== '#quiz') return;
-  if(window.location.hash === '#quiz'){
-    history.pushState({page:'quiz'}, '', '#quiz');
-  } else {
-    restartAll();
-  }
-});
-
-history.replaceState({page:'start'}, '', '#');
-
-
-
-// ================== RANKING (localStorage) ==================
-const LS_KEY = "quizLeaderboard_v1";
-const NAME_KEY = "quizPlayerName";
-
-const screenLB = document.querySelector('#screen-lb');
-const lbBox = document.querySelector('#leaderboard');
-const btnSaveName = document.querySelector('#btn-save-name');
-const playerNameInput = document.querySelector('#player-name');
-const btnViewLB = document.querySelector('#btn-view-lb');
-const btnBackStart = document.querySelector('#btn-back-start');
-const btnClearLB = document.querySelector('#btn-clear-lb');
-const btnSaveRank = document.querySelector('#btn-save-rank');
-const rankNameInput = document.querySelector('#rank-name');
-
-function getLeaderboard(){
-  try{ return JSON.parse(localStorage.getItem(LS_KEY)) || []; }catch(e){ return []; }
-}
-function setLeaderboard(arr){
-  localStorage.setItem(LS_KEY, JSON.stringify(arr));
-}
-function getPlayerName(){
-  return localStorage.getItem(NAME_KEY) || sessionStorage.getItem(NAME_KEY) || "";
-}
-function setPlayerName(name){
-  localStorage.setItem(NAME_KEY, name);
-  sessionStorage.setItem(NAME_KEY, name);
-}
-
-function renderLeaderboard(){
-  const data = getLeaderboard();
-  if(!data.length){
-    lbBox.innerHTML = '<p class="muted">Aún no hay puntuaciones guardadas.</p>';
-    return;
-  }
-  // Keep last attempt per name (by date), then sort by pct desc, then date desc
-  const lastByName = {};
-  data.sort((a,b)=> new Date(a.date)-new Date(b.date)).forEach(item=> lastByName[item.name]=item);
-  const arr = Object.values(lastByName).sort((a,b)=>{
-    if(b.pct !== a.pct) return b.pct - a.pct;
-    return new Date(b.date) - new Date(a.date);
-  }).slice(0,20);
-  let rows = arr.map((it, i)=>{
-    const cls = i===0?'rank1':(i===1?'rank2':(i===2?'rank3':''));
-    return `<tr class="${cls}"><td>${i+1}</td><td>${it.name}</td><td>Bloque ${it.blockId}</td><td>${it.score}/${it.total}</td><td>${it.pct}%</td><td>${new Date(it.date).toLocaleString()}</td></tr>`;
-  }).join("");
-  lbBox.innerHTML = `<table class="table"><thead><tr><th>#</th><th>Nombre</th><th>Bloque</th><th>Puntuación</th><th>%</th><th>Fecha</th></tr></thead><tbody>${rows}</tbody></table>`;
-}
-
-function showLeaderboard(){
-  screenStart.classList.add('hidden');
-  screenQuiz.classList.add('hidden');
-  screenEnd.classList.add('hidden');
-  screenLB.classList.remove('hidden');
-  renderLeaderboard();
-  history.pushState({page:'lb'}, '', '#ranking');
-}
-
-btnViewLB?.addEventListener('click', showLeaderboard);
-btnBackStart?.addEventListener('click', ()=>{
-  screenLB.classList.add('hidden');
-  screenStart.classList.remove('hidden');
-  history.pushState({page:'start'}, '', '#');
-});
-
-btnSaveName?.addEventListener('click', ()=>{
-  const n = playerNameInput.value.trim();
-  if(!n){ alert('Escribe tu nombre para guardarlo.'); return; }
-  setPlayerName(n);
-  alert('Nombre guardado para el ranking.');
-});
-
-btnClearLB?.addEventListener('click', ()=>{
-  const name = getPlayerName();
-  if(!name){ alert('Guarda tu nombre primero.'); return; }
-  const data = getLeaderboard().filter(x => x.name !== name);
-  setLeaderboard(data);
-  alert('Puntuaciones de tu nombre eliminadas del ranking local.');
-});
-
-// Prefill name boxes
-window.addEventListener('load', ()=>{
-  const n = getPlayerName();
-  if(n){
-    if(playerNameInput) playerNameInput.value = n;
-    if(rankNameInput) rankNameInput.value = n;
-  }
-});
-
-// Override startBlock to require/remember name (optional, but we warn if missing)
-const _startBlock = startBlock;
-startBlock = function(i){
-  const n = getPlayerName() || (playerNameInput?.value.trim() || '');
-  if(n){ setPlayerName(n); }
-  else{
-    if(!confirm('No has indicado nombre. Puedes jugar sin ranking o volver atrás para escribirlo. ¿Continuar sin nombre?')){ return; }
-  }
-  _startBlock(i);
-}
-
-// On end screen, allow saving to leaderboard
-btnSaveRank?.addEventListener('click', ()=>{
-  const name = (rankNameInput?.value || '').trim() || getPlayerName();
-  if(!name){ alert('Indica un nombre para guardar tu puntuación.'); return; }
-  const b = blocks[state.blockIndex];
-  const total = b.questions.length;
-  const pct = Math.round((state.score/Math.max(total,1))*100);
-  const entry = {
-    name, blockId: b.id, score: state.score, total, pct, date: new Date().toISOString()
-  };
-  const data = getLeaderboard();
-  data.push(entry);
-  setLeaderboard(data);
-  setPlayerName(name);
-  alert('¡Puntuación guardada en el ranking local!');
-  renderLeaderboard();
-});
-
-// Hook popstate to handle #ranking
-const _popHandler = window.onpopstate;
-window.addEventListener('popstate', ()=>{
-  if(location.hash === '#ranking'){
-    showLeaderboard();
-  }
-});
-
-
-
-// ====== TRACK ANSWERS FOR REVIEW ======
-if(!state) var state = {};
-state.answers = [];
-
-const bannerBox = document.createElement('div'); // dynamic banner per question
-bannerBox.className = 'banner hidden';
-document.querySelector('#screen-quiz .footer').insertAdjacentElement('beforebegin', bannerBox);
-
-const reviewList = document.querySelector('#review-list');
-const adviceBody = document.querySelector('#advice-body');
-
-function resetBanner(){ bannerBox.className = 'banner hidden'; bannerBox.innerHTML=''; }
-
-function onSelect_withReview(idx){
-  if(state.locked) return;
-  state.locked = true;
-  const b = blocks[state.blockIndex];
-  const q = b.questions[state.qIndex];
-  const nodes = [...choicesBox.children];
-  nodes.forEach((node, i)=>{
-    node.classList.add('selected');
-    if(i === q.correctIndex){ node.classList.add('correct'); }
-    if(i === idx && i !== q.correctIndex){ node.classList.add('incorrect'); }
-  });
-  const ok = idx === q.correctIndex;
-  if(ok){ state.score++; scoreMini.textContent = state.score; }
-
-  // Save answer for later review
-  state.answers[state.qIndex] = {
-    q: q.q,
-    selectedIndex: idx,
-    selectedText: q.options[idx],
-    correctIndex: q.correctIndex,
-    correctText: q.options[q.correctIndex],
-    rationale: q.rationale,
-    isCorrect: ok
-  };
-
-  // Show banner + explanation
-  explainBox.classList.remove('hidden');
-  explainBox.innerHTML = `
-    <div><b>Respuesta correcta:</b> ${q.options[q.correctIndex]}</div>
-    <div class="muted" style="margin-top:6px">${q.rationale}</div>
-  `;
-  bannerBox.classList.remove('hidden');
-  bannerBox.classList.add(ok ? 'ok' : 'bad');
-  bannerBox.innerHTML = ok
-    ? '✅ <b>¡Correcto!</b> Buen trabajo.'
-    : '❌ <b>Respuesta incorrecta.</b> Revisa la explicación y continúa.';
-
-  btnNext.disabled = false;
-}
-
-// Override original onSelect
-onSelect = onSelect_withReview;
-
-// ====== SUMMARY & RECOMMENDATIONS AT END ======
-function buildSummaryAndAdvice(){
-  // Build incorrect list
-  const wrong = (state.answers || []).filter(a => a && !a.isCorrect);
-  if(!wrong.length){
-    reviewList.innerHTML = '<p class="muted">🎉 ¡No hay preguntas falladas en este bloque!</p>';
-  }else{
-    reviewList.innerHTML = wrong.map(a => `
-      <div class="review-item">
-        <div class="q">• ${a.q}</div>
-        <div class="u">Tu respuesta: ${a.selectedText} ❌</div>
-        <div class="c">Correcta: ${a.correctText} ✅</div>
-        <div class="muted small">${a.rationale}</div>
-      </div>
-    `).join("");
-  }
-
-  // Simple topic-based advice from keywords
-  const topics = [
-    {key:'temperatura', label:'Control de temperaturas', tip:'Refuerza rangos clave: 0–4 °C (frío), ≥65 °C (mantenimiento caliente), 70–75 °C (cocciones/recalentado), –20 °C ≥24 h (anisakis). Usa termómetro sonda y registros.'},
-    {key:'descongel', label:'Descongelación segura', tip:'Planifica descongelaciones en refrigeración o microondas (cocción inmediata). Evita temperatura ambiente. Recoge goteos en bandeja.'},
-    {key:'alérgen', label:'Gestión de alérgenos', tip:'Separa zonas/utensilios, etiqueta y comunica por escrito los alérgenos. Evita trazas con limpieza efectiva entre tareas.'},
-    {key:'limpieza', label:'Limpieza y desinfección', tip:'Secuencia correcta: limpiar primero (detergente) y luego desinfectar. Registra PLD y respeta tiempos/concentraciones.'},
-    {key:'aceite', label:'Frituras/aceites', tip:'Renueva con signos de humo, oscurecimiento, viscosidad o espuma. Evita sobre-tostados que generan acrilamida.'},
-    {key:'almacen', label:'Almacenamiento y orden', tip:'Cocinados arriba; crudos abajo. FIFO/FEFO, separación de químicos, no sobrecargar cámaras; deja circular el aire frío.'},
-    {key:'higiene', label:'Higiene personal y manos', tip:'Lávate antes de manipular y al cambiar de tarea; heridas cubiertas con apósito impermeable + guante; nada de móviles/joyas.'},
-    {key:'trazabil', label:'Trazabilidad y recepción', tip:'Conserva albaranes/etiquetas, verifica temperaturas de entrega y estado de envases; rechaza anomalías (latas abolladas/hinchadas).'}
-  ];
-
-  // Count misses per topic
-  const counters = topics.map(t => ({label:t.label, tip:t.tip, count:0}));
-  wrong.forEach(a => {
-    const text = (a.q + ' ' + a.rationale).toLowerCase();
-    topics.forEach((t, idx)=>{
-      if(text.includes(t.key)) counters[idx].count += 1;
-    });
-  });
-  counters.sort((a,b)=> b.count - a.count);
-  const focus = counters.filter(c=>c.count>0).slice(0,2);
-
-  if(focus.length){
-    adviceBody.innerHTML = '<ul>' + focus.map(c=>`<li><b>${c.label}:</b> ${c.tip}</li>`).join('') + '</ul>';
-  }else{
-    adviceBody.innerHTML = '<p class="muted">Buen desempeño general. Repite el bloque o prueba un nivel superior para consolidar.</p>';
+function saveScore(pct, block, score, total, wrong){
+  const name=(prompt("Tu nombre para el ranking (opcional):","")||"").trim()||"anónimo";
+  const r=getReg(); r.push({name,pct,block,score,total,date:new Date().toISOString()});
+  r.sort((a,b)=>b.pct-a.pct || (a.date<b.date?1:-1)); setReg(r);
+  if(ENDPOINT_URL){
+    try{ fetch(ENDPOINT_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({name,pct,block,score,total,wrong})}); }catch(e){}
   }
 }
-
-const _endBlock2 = endBlock;
-endBlock = function(){
-  _endBlock2();
-  buildSummaryAndAdvice();
-  resetBanner();
+function openRanking(){
+  const r=getReg();
+  document.getElementById("rankList").innerHTML = r.length? r.slice(0,30).map((x,i)=>
+    (i+1)+". <b>"+escapeHtml(x.name)+"</b> — "+x.pct+"% (Bloque "+x.block+") · "+new Date(x.date).toLocaleString()
+  ).join("<br>") : "Aún no hay puntuaciones.";
+  document.getElementById("rankModal").classList.add("show");
 }
+function closeRanking(){ document.getElementById("rankModal").classList.remove("show"); }
+function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
-
-
-// ===== GitHub sync config =====
-const GHSYNC = {
-  ENABLED: true,
-  ENDPOINT_URL: "https://your-worker.example.workers.dev/submit", // <-- cambia a tu URL del Worker
-  // Campos adicionales de contexto de tu hotel (metadatos):
-  hotel: {
-    brand: "Sercotel Guadiana / Cumbria",
-    propertyCodes: ["GUADIANA","CUMBRIA"],
-    project: "Formación Manipulación de Alimentos",
-    version: "1.0.0"
-  }
-};
-
-async function sendToGitHub(entry){
-  try{
-    if(!GHSYNC.ENABLED) return {ok:false, reason:"disabled"};
-    const res = await fetch(GHSYNC.ENDPOINT_URL, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(entry),
-    });
-    if(!res.ok){
-      throw new Error("HTTP "+res.status);
-    }
-    const data = await res.json().catch(()=>({ok:true}));
-    return {ok:true, data};
-  }catch(e){
-    console.warn("GitHub sync failed:", e);
-    return {ok:false, error: String(e)};
-  }
-}
-
-// Cola local si no hay red
-function enqueuePending(entry){
-  const k = "quizPendingSends_v1";
-  const arr = JSON.parse(localStorage.getItem(k)||"[]");
-  arr.push(entry);
-  localStorage.setItem(k, JSON.stringify(arr));
-}
-async function flushPending(){
-  const k = "quizPendingSends_v1";
-  let arr = JSON.parse(localStorage.getItem(k)||"[]");
-  if(!arr.length) return;
-  const still = [];
-  for(const e of arr){
-    const r = await sendToGitHub(e);
-    if(!r.ok) still.push(e);
-  }
-  localStorage.setItem(k, JSON.stringify(still));
-}
-window.addEventListener('online', flushPending);
-setTimeout(flushPending, 3000);
-
-// Hook guardado en ranking para también enviar a GitHub
-const _saveRank = btnSaveRank?.onclick;
-btnSaveRank?.addEventListener('click', async ()=>{
-  try{
-    const b = blocks[state.blockIndex];
-    const total = b.questions.length;
-    const pct = Math.round((state.score/Math.max(total,1))*100);
-    const name = (rankNameInput?.value || '').trim() || getPlayerName() || "anon";
-    const wrong = (state.answers || []).filter(a => a && !a.isCorrect).map(a => ({
-      q: a.q, selected: a.selectedText, correct: a.correctText
-    }));
-    const payload = {
-      name, blockId: b.id, level: b.level,
-      score: state.score, total, pct,
-      date: new Date().toISOString(),
-      wrong, // listado resumido
-      meta: GHSYNC.hotel,
-      ua: navigator.userAgent || "",
-    };
-    const r = await sendToGitHub(payload);
-    if(!r.ok) enqueuePending(payload);
-  }catch(e){
-    console.warn("enqueue on error", e);
-  }
-});
-
-
-// ========== INIT SEGURO + DIAGNOSTICO ==========
-(function(){
-  function updateDiag(msg){ var d=document.querySelector('#diag'); if(d) d.innerHTML=msg; }
-  function countQuestions(){
-    try{
-      if(!Array.isArray(blocks)) return 'blocks no definido';
-      const totals = blocks.map(b => (b.questions||[]).length);
-      return 'Bloques: ' + blocks.length + ' · Preguntas: ' + totals.join(' / ');
-    }catch(e){ return 'Error leyendo blocks: '+e; }
-  }
-  function boot(){
-    try{
-      if(typeof renderPicker==='function') renderPicker();
-      const picker=document.querySelector('#picker');
-      const msg = countQuestions();
-      if(!picker || !picker.children.length){
-        updateDiag('⚠️ No se han pintado las tarjetas de bloques. ' + msg + '. Prueba Ctrl+F5.');
-      }else{
-        updateDiag('✅ Listo. ' + msg);
-      }
-    }catch(e){
-      console.error(e);
-      updateDiag('⚠️ Error de inicio: '+e);
-    }
-  }
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded', boot);
-  } else {
-    boot();
-  }
-  // Reintento por si el navegador demora scripts
-  setTimeout(boot, 300);
-  setTimeout(boot, 1000);
-})();
-
-
-// Conectar botones pre-renderizados (modo failsafe)
-(function(){
-  function wire(){
-    var b1=document.getElementById('static-b1');
-    var b2=document.getElementById('static-b2');
-    var b3=document.getElementById('static-b3');
-    if(b1&&typeof startBlock==='function'){ b1.onclick=function(){ startBlock(0); }; }
-    if(b2&&typeof startBlock==='function'){ b2.onclick=function(){ startBlock(1); }; }
-    if(b3&&typeof startBlock==='function'){ b3.onclick=function(){ startBlock(2); }; }
-  }
-  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', wire); } else { wire(); }
-})();
-
-// Mostrar errores JS en pantalla
-window.addEventListener('error', function(e){
-  var d=document.getElementById('diag');
-  if(d){ d.innerHTML = '⚠️ Error JS: ' + (e.message || e.error); }
-});
+/* Inicio */
+showStart();
 </script>
 </body>
 </html>
